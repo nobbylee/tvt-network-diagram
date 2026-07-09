@@ -1,0 +1,86 @@
+@import 'tailwindcss';
+
+/* TVT 网络架构图 — 设计令牌 */
+@theme {
+  --color-tvt-50: #eff6ff;
+  --color-tvt-100: #dbeafe;
+  --color-tvt-500: #0066cc;
+  --color-tvt-600: #0052a3;
+  --color-tvt-700: #003d7a;
+
+  --color-brand-third: #64748b;
+
+  --font-sans: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+}
+
+:root {
+  --app-bg: #f1f5f9;
+  --panel-bg: #ffffff;
+  --panel-border: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --canvas-bg: #f8fafc;
+  --canvas-grid: #cbd5e1;
+  --accent: #0066cc;
+  --accent-hover: #0052a3;
+  --accent-soft: #eff6ff;
+  --toolbar-bg: #ffffff;
+  --input-bg: #ffffff;
+  --input-border: #e2e8f0;
+  --node-bg: #ffffff;
+  --node-border: #e2e8f0;
+  --node-selected: #0066cc;
+  --hover-bg: #f8fafc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--app-bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* 滚动条 */
+.panel-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.panel-scroll::-webkit-scrollbar-thumb {
+  background: var(--panel-border);
+  border-radius: 3px;
+}
+
+/* React Flow 控件样式微调 */
+.react-flow__controls-button {
+  background: var(--panel-bg) !important;
+  border-bottom-color: var(--panel-border) !important;
+  fill: var(--text-secondary) !important;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--hover-bg) !important;
+}
+
+.react-flow__minimap {
+  background: var(--panel-bg) !important;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--accent) !important;
+}

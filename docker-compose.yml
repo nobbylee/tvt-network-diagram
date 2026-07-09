@@ -1,0 +1,17 @@
+services:
+  tvt-arch:
+    build: .
+    container_name: tvt-network-arch
+    ports:
+      - "8080:80"
+    environment:
+      PORT: "3001"
+      HOST: "0.0.0.0"
+      JWT_SECRET: "${JWT_SECRET:-tvt-change-me-in-production}"
+      DATA_DIR: "/data"
+    volumes:
+      - tvt_data:/data
+    restart: unless-stopped
+
+volumes:
+  tvt_data:

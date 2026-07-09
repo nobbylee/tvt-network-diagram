@@ -1,0 +1,15 @@
+{
+  "name": "tvt-network-arch",
+  "private": true,
+  "version": "1.0.0",
+  "description": "TVT 网络架构图绘制工具",
+  "scripts": {
+    "dev:web": "npm --prefix packages/web run dev",
+    "dev:server": "npm --prefix packages/server run dev",
+    "build:web": "npm --prefix packages/web run build",
+    "build:server": "npm --prefix packages/server run build",
+    "build": "npm run build:server && npm run build:web",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down"
+  }
+}

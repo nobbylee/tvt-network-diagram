@@ -1,0 +1,105 @@
+import Database from 'better-sqlite3'
+import type { Database as DatabaseType } from 'better-sqlite3'
+import bcrypt from 'bcryptjs'
+import fs from 'node:fs'
+import path from 'node:path'
+
+const DATA_DIR = path.resolve(process.env.DATA_DIR ?? './data')
+const DB_PATH = path.join(DATA_DIR, 'app.db')
+
+fs.mkdirSync(DATA_DIR, { recursive: true })
+
+export const db: DatabaseType = new Database(DB_PATH)
+
+db.pragma('journal_mode = WAL')
+db.pragma('foreign_keys = ON')
+
+export type UserRow = {
+  id: number
+  username: string
+  password: string
+  display_name: string | null
+  created_at: string
+}
+
+export type ProjectRow = {
+  id: number
+  name: string
+  customer: string | null
+  author_id: number | null
+  diagram: string
+  created_at: string
+  updated_at: string
+}
+
+export type DiagramData = {
+  nodes: unknown[]
+  edges: unknown[]
+}
+
+/** 初始化表结构 */
+export function initSchema(): void {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      username     TEXT UNIQUE NOT NULL,
+      password     TEXT NOT NULL,
+      display_name TEXT,
+      created_at   TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS projects (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      name       TEXT NOT NULL,
+      customer   TEXT,
+      author_id  INTEGER REFERENCES users(id),
+      diagram    TEXT NOT NULL DEFAULT '{"nodes":[],"edges":[]}',
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_projects_customer ON projects(customer);
+    CREATE INDEX IF NOT EXISTS idx_projects_updated ON projects(updated_at DESC);
+  `)
+}
+
+/** 启动时写入默认账号（已存在则跳过） */
+export function seedUsers(): void {
+  const defaults = [
+    { username: 'admin', password: 'admin123', display_name: '管理员' },
+    { username: 'zhangsan', password: '123456', display_name: '张三' },
+  ]
+
+  const find = db.prepare('SELECT id FROM users WHERE username = ?')
+  const insert = db.prepare(
+    'INSERT INTO users (username, password, display_name) VALUES (?, ?, ?)',
+  )
+
+  for (const u of defaults) {
+    if (find.get(u.username)) continue
+    const hash = bcrypt.hashSync(u.password, 10)
+    insert.run(u.username, hash, u.display_name)
+  }
+}
+
+export function parseDiagram(raw: string | null | undefined): DiagramData {
+  if (!raw) return { nodes: [], edges: [] }
+  try {
+    const parsed = JSON.parse(raw) as Partial<DiagramData>
+    return {
+      nodes: Array.isArray(parsed.nodes) ? parsed.nodes : [],
+      edges: Array.isArray(parsed.edges) ? parsed.edges : [],
+    }
+  } catch {
+    return { nodes: [], edges: [] }
+  }
+}
+
+export function stringifyDiagram(diagram: DiagramData | undefined | null): string {
+  return JSON.stringify({
+    nodes: diagram?.nodes ?? [],
+    edges: diagram?.edges ?? [],
+  })
+}
+
+export { DATA_DIR, DB_PATH }
