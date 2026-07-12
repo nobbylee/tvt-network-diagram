@@ -43,7 +43,7 @@ export async function captureDiagramPng(
   const bounds = getNodesBounds(exportable)
   const padding = options.padding ?? 40
   const pixelRatio = options.pixelRatio ?? 2
-  const backgroundColor = options.backgroundColor ?? '#f8fafc'
+  const backgroundColor = options.backgroundColor ?? '#fbf8f1'
 
   const contentW = Math.max(bounds.width + padding * 2, 320)
   const contentH = Math.max(bounds.height + padding * 2, 240)

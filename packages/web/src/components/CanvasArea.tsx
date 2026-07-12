@@ -479,9 +479,9 @@ function CanvasInner() {
             background: 'var(--panel-bg)',
           }}
           nodeColor={(n) => {
-            if (n.type === 'text') return '#94a3b8'
+            if (n.type === 'text') return '#8a93a0'
             if (n.type === 'anchor') return '#e11d48'
-            return '#0066cc'
+            return '#2f5d50'
           }}
           maskColor="rgba(15, 23, 42, 0.08)"
         />

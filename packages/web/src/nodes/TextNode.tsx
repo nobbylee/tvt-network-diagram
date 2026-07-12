@@ -38,7 +38,7 @@ function TextNodeComponent({ id, data, selected }: NodeProps<TextNode>) {
         background: 'var(--panel-bg)',
         borderColor: selected ? 'var(--accent)' : 'var(--panel-border)',
         borderWidth: selected ? 2 : 1,
-        boxShadow: selected ? '0 0 0 3px rgba(0, 102, 204, 0.1)' : 'none',
+        boxShadow: selected ? '0 0 0 3px rgba(47, 93, 80, 0.1)' : 'none',
       }}
       onDoubleClick={(e) => {
         e.stopPropagation()

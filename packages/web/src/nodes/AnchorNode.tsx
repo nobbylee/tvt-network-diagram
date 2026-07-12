@@ -27,8 +27,8 @@ function AnchorNodeComponent({ selected }: NodeProps<AnchorNode>) {
       <div
         className="h-2.5 w-2.5 rounded-full border-2 border-white shadow-sm"
         style={{
-          background: selected ? 'var(--accent)' : '#64748b',
-          boxShadow: selected ? '0 0 0 3px rgba(0, 102, 204, 0.25)' : undefined,
+          background: selected ? 'var(--accent)' : 'var(--text-secondary)',
+          boxShadow: selected ? '0 0 0 3px rgba(47, 93, 80, 0.25)' : undefined,
         }}
       />
     </div>

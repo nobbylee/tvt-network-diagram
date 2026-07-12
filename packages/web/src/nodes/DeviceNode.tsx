@@ -41,7 +41,7 @@ function DeviceNodeComponent({ id, data, selected }: NodeProps<DeviceNode>) {
       style={{
         borderColor,
         borderWidth: selected || hasError || hasWarning ? 2 : 1,
-        boxShadow: selected ? '0 0 0 3px rgba(0, 102, 204, 0.12)' : 'none',
+        boxShadow: selected ? '0 0 0 3px rgba(47, 93, 80, 0.12)' : 'none',
       }}
     >
       {hasError && (
