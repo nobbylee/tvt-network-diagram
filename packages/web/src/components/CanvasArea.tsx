@@ -454,10 +454,11 @@ function CanvasInner() {
         multiSelectionKeyCode="Shift"
         proOptions={{ hideAttribution: true }}
       >
+        {/* 横向内页格线：gap[0] 取一个极大值把竖线推到几乎不可能平移到达的距离，只保留每 32px 一条的横线 */}
         <Background
           id="rules"
           variant={BackgroundVariant.Lines}
-          gap={[100000, 32]}
+          gap={[5000000, 32]}
           lineWidth={1}
           color="var(--bg-rule)"
         />
