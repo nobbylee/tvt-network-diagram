@@ -138,7 +138,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
         className="flex h-14 shrink-0 items-center justify-between border-b px-6"
         style={{ background: 'var(--toolbar-bg)', borderColor: 'var(--panel-border)' }}
       >
-        <div className="text-sm font-semibold text-[var(--text-primary)]">TVT 网络架构图</div>
+        <div className="nb-title text-sm">TVT 网络架构图</div>
         <div className="flex items-center gap-3">
           <span className="text-xs text-[var(--text-secondary)]">
             {user?.displayName || user?.username}
@@ -156,7 +156,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
       <main className="mx-auto w-full max-w-5xl flex-1 overflow-y-auto px-6 py-8">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-xl font-semibold text-[var(--text-primary)]">我的项目</h1>
+            <h1 className="nb-title text-xl">我的项目</h1>
             <p className="mt-1 text-sm text-[var(--text-secondary)]">
               打开已有拓扑，或新建项目开始绘制
             </p>
@@ -290,7 +290,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
                     </svg>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-[var(--text-muted)]">
+                    <span className="font-mono text-[10px] text-[var(--text-muted)]">
                       {formatUpdatedAt(project.updatedAt)}
                     </span>
                     <span
@@ -330,13 +330,13 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
                     </span>
                   </div>
                 </div>
-                <div className="mb-1 text-sm font-medium text-[var(--text-primary)] group-hover:text-[var(--accent)]">
+                <div className="nb-title mb-1 text-sm group-hover:text-[var(--accent)]">
                   {project.name}
                 </div>
                 <div className="mb-3 text-xs text-[var(--text-secondary)]">
                   {project.customer || '未填写客户'}
                 </div>
-                <div className="mt-auto flex items-center gap-3 text-[10px] text-[var(--text-muted)]">
+                <div className="mt-auto flex items-center gap-3 font-mono text-[10px] text-[var(--text-muted)]">
                   {typeof project.deviceCount === 'number' && (
                     <span>{project.deviceCount} 设备</span>
                   )}

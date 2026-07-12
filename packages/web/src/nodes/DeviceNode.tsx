@@ -78,11 +78,11 @@ function DeviceNodeComponent({ id, data, selected }: NodeProps<DeviceNode>) {
             />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-xs font-medium text-[var(--text-primary)]">
+            <div className="nb-title truncate text-xs">
               {data.name}
             </div>
             {data.model && (
-              <div className="truncate text-[10px] text-[var(--text-muted)]">{data.model}</div>
+              <div className="truncate font-mono text-[10px] text-[var(--text-muted)]">{data.model}</div>
             )}
           </div>
         </div>

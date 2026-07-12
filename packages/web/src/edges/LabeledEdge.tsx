@@ -73,7 +73,7 @@ function LabeledEdgeComponent({
       {label && (
         <EdgeLabelRenderer>
           <div
-            className="nodrag nopan pointer-events-none absolute max-w-[160px] truncate rounded border px-1.5 py-0.5 text-[9px] text-[var(--text-secondary)]"
+            className="nodrag nopan pointer-events-none absolute max-w-[160px] truncate rounded border px-1.5 py-0.5 font-mono text-[9px] text-[var(--text-secondary)]"
             style={{
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
               background: 'var(--panel-bg)',

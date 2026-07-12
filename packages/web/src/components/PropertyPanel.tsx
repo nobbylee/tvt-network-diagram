@@ -217,7 +217,7 @@ export function PropertyPanel() {
               icon.startsWith('ipc-') || icon === 'ptz' || icon === 'access'
             return (
               <>
-                <p className="mb-2 text-[10px] font-medium text-[var(--text-muted)]">基本信息</p>
+                <p className="nb-kicker mb-2">基本信息</p>
                 <Field label="设备名称">
                   <input
                     type="text"
@@ -283,7 +283,7 @@ export function PropertyPanel() {
                   />
                 </Field>
 
-                <p className="mb-2 mt-3 text-[10px] font-medium text-[var(--text-muted)]">网络</p>
+                <p className="nb-kicker mb-2 mt-3">网络</p>
                 <Field label="IP 地址" optional>
                   <input
                     type="text"
@@ -338,9 +338,7 @@ export function PropertyPanel() {
                 </Field>
 
                 {(isRecorder || isSwitch || isPowered) && (
-                  <p className="mb-2 mt-3 text-[10px] font-medium text-[var(--text-muted)]">
-                    容量与供电
-                  </p>
+                  <p className="nb-kicker mb-2 mt-3">容量与供电</p>
                 )}
                 {isRecorder && (
                   <Field label="最大通道数" optional>

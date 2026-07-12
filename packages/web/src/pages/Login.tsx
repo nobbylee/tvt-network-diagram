@@ -49,7 +49,7 @@ export function Login({ onSuccess }: LoginProps) {
         style={{ background: 'var(--panel-bg)', borderColor: 'var(--panel-border)' }}
       >
         <div className="mb-6 flex flex-col items-center text-center">
-          <h1 className="text-lg font-semibold text-[var(--text-primary)]">TVT 网络架构图</h1>
+          <h1 className="nb-title text-lg">TVT 网络架构图</h1>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">登录后管理与编辑拓扑项目</p>
         </div>
 
