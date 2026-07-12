@@ -117,6 +117,8 @@ type CanvasState = {
   future: DiagramSnapshot[]
   zoomPercent: number
   snapGuide: SnapGuide | null
+  /** 是否有未保存修改 */
+  dirty: boolean
 
   onNodesChange: OnNodesChange<DiagramNode>
   onEdgesChange: OnEdgesChange<DiagramEdge>
@@ -159,6 +161,8 @@ type CanvasState = {
   canUndo: () => boolean
   canRedo: () => boolean
   resetDiagram: (nodes?: DiagramNode[], edges?: DiagramEdge[]) => void
+  markClean: () => void
+  markDirty: () => void
 }
 
 type ClipboardPayload = {
@@ -178,6 +182,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   future: [],
   zoomPercent: 100,
   snapGuide: null,
+  dirty: false,
 
   onNodesChange: (changes: NodeChange<DiagramNode>[]) => {
     const structural = changes.some(
@@ -192,6 +197,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
     if (structural || positionEnd) {
       get().takeSnapshot()
+      set({ dirty: true })
     }
 
     let snapGuide: SnapGuide | null = null
@@ -222,7 +228,10 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     const structural = changes.some(
       (c) => c.type === 'remove' || c.type === 'add' || c.type === 'replace',
     )
-    if (structural) get().takeSnapshot()
+    if (structural) {
+      get().takeSnapshot()
+      set({ dirty: true })
+    }
 
     const nextEdges = applyEdgeChanges(changes, get().edges)
     const selectedEdgeId = get().selectedEdgeId
@@ -253,7 +262,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       type: 'labeled',
       data: { connectionType: '网线' },
     }
-    set({ edges: addEdge(edge, get().edges) })
+    set({ edges: addEdge(edge, get().edges), dirty: true })
   },
 
   setSelectedNodeId: (id) => set({ selectedNodeId: id, selectedEdgeId: null }),
@@ -263,6 +272,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
   updateNodeData: (id, patch) => {
     set({
+      dirty: true,
       nodes: get().nodes.map((node) =>
         node.id === id ? { ...node, data: { ...node.data, ...patch } } : node,
       ) as DiagramNode[],
@@ -271,6 +281,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
   updateEdgeData: (id, patch) => {
     set({
+      dirty: true,
       edges: get().edges.map((edge) =>
         edge.id === id
           ? { ...edge, data: { ...edge.data, ...patch } }
@@ -291,6 +302,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       nodes: [...get().nodes, node],
       selectedNodeId: node.id,
       selectedEdgeId: null,
+      dirty: true,
     })
   },
 
@@ -307,6 +319,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       nodes: [...get().nodes, node],
       selectedNodeId: node.id,
       selectedEdgeId: null,
+      dirty: true,
     })
   },
 
@@ -347,6 +360,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       edges: [...get().edges, edge],
       selectedEdgeId: edgeId,
       selectedNodeId: null,
+      dirty: true,
     })
   },
 
@@ -379,6 +393,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
         ),
         selectedNodeId: null,
         selectedEdgeId: null,
+        dirty: true,
       })
       return
     }
@@ -391,12 +406,14 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
           nodes: nodes.filter((n) => !anchorIds.has(n.id)),
           edges: edges.filter((e) => e.id !== selectedEdgeId),
           selectedEdgeId: null,
+          dirty: true,
         })
         return
       }
       set({
         edges: edges.filter((e) => e.id !== selectedEdgeId),
         selectedEdgeId: null,
+        dirty: true,
       })
     }
   },
@@ -484,6 +501,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       edges: [...get().edges, ...newEdges],
       selectedNodeId: firstId,
       selectedEdgeId: null,
+      dirty: true,
     })
 
     // 连续粘贴继续偏移
@@ -519,6 +537,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       selectedNodeId: null,
       selectedEdgeId: null,
       snapGuide: null,
+      dirty: true,
     })
   },
 
@@ -534,6 +553,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       selectedNodeId: null,
       selectedEdgeId: null,
       snapGuide: null,
+      dirty: true,
     })
   },
 
@@ -549,8 +569,12 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       selectedNodeId: null,
       selectedEdgeId: null,
       snapGuide: null,
+      dirty: false,
     })
   },
+
+  markClean: () => set({ dirty: false }),
+  markDirty: () => set({ dirty: true }),
 }))
 
 // 供类型收窄使用

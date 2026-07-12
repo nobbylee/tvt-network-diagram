@@ -6,7 +6,7 @@ import {
   type DiagramData,
   type ProjectRow,
 } from '../db.js'
-import { findUserById } from '../auth.js'
+import { findUserById, isAdminUsername } from '../auth.js'
 import { requireAuth } from '../middleware/auth.js'
 import {
   diagramToNarch,
@@ -67,6 +67,18 @@ function safeFilename(name: string): string {
   return name.replace(/[\\/:*?"<>|]+/g, '_').trim() || 'project'
 }
 
+function canAccessProject(
+  row: ProjectRow,
+  userId: number | undefined,
+  username: string | undefined,
+): boolean {
+  if (isAdminUsername(username)) return true
+  if (userId == null) return false
+  // 无归属的旧项目仅管理员可见
+  if (row.author_id == null) return false
+  return row.author_id === userId
+}
+
 export async function projectRoutes(app: FastifyInstance): Promise<void> {
   /** GET /api/projects?search=&customer= */
   app.get<{
@@ -74,9 +86,17 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
   }>('/api/projects', { preHandler: requireAuth }, async (request) => {
     const search = request.query.search?.trim()
     const customer = request.query.customer?.trim()
+    const userId = request.user?.id
+    const username = request.user?.username
+    const admin = isAdminUsername(username)
 
     let sql = 'SELECT * FROM projects WHERE 1=1'
-    const params: string[] = []
+    const params: (string | number)[] = []
+
+    if (!admin) {
+      sql += ' AND author_id = ?'
+      params.push(userId!)
+    }
 
     if (search) {
       sql += ' AND (name LIKE ? OR customer LIKE ?)'
@@ -201,6 +221,9 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
       if (!row) {
         return reply.code(404).send({ error: '项目不存在' })
       }
+      if (!canAccessProject(row, request.user?.id, request.user?.username)) {
+        return reply.code(403).send({ error: '无权访问该项目' })
+      }
 
       const diagram = parseDiagram(row.diagram)
       const narch = diagramToNarch(diagram, {
@@ -235,6 +258,9 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
       if (!row) {
         return reply.code(404).send({ error: '项目不存在' })
       }
+      if (!canAccessProject(row, request.user?.id, request.user?.username)) {
+        return reply.code(403).send({ error: '无权访问该项目' })
+      }
       return toDetail(row)
     },
   )
@@ -256,6 +282,9 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
     const row = getProject(id)
     if (!row) {
       return reply.code(404).send({ error: '项目不存在' })
+    }
+    if (!canAccessProject(row, request.user?.id, request.user?.username)) {
+      return reply.code(403).send({ error: '无权访问该项目' })
     }
 
     const body = request.body ?? {}
@@ -296,6 +325,9 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
       const row = getProject(id)
       if (!row) {
         return reply.code(404).send({ error: '项目不存在' })
+      }
+      if (!canAccessProject(row, request.user?.id, request.user?.username)) {
+        return reply.code(403).send({ error: '无权访问该项目' })
       }
 
       db.prepare('DELETE FROM projects WHERE id = ?').run(id)

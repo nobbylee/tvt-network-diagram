@@ -210,8 +210,14 @@ export function PropertyPanel() {
         <div className="panel-scroll flex-1 overflow-y-auto px-4 py-3">
           {(() => {
             const d = node as DeviceNode
+            const icon = String(d.data.icon)
+            const isRecorder = icon === 'nvr' || icon === 'dvr'
+            const isSwitch = icon === 'switch'
+            const isPowered =
+              icon.startsWith('ipc-') || icon === 'ptz' || icon === 'access'
             return (
               <>
+                <p className="mb-2 text-[10px] font-medium text-[var(--text-muted)]">基本信息</p>
                 <Field label="设备名称">
                   <input
                     type="text"
@@ -250,16 +256,16 @@ export function PropertyPanel() {
                     style={inputStyle()}
                   />
                 </Field>
-                <Field label="IP 地址" optional>
+                <Field label="安装位置" optional>
                   <input
                     type="text"
-                    value={d.data.ip ?? ''}
-                    placeholder="如 192.168.1.10"
+                    value={d.data.location ?? ''}
+                    placeholder="如 一楼大厅"
                     onFocus={snapshotOnFocus}
                     onChange={(e) =>
-                      updateNodeData(d.id, { ip: e.target.value || undefined })
+                      updateNodeData(d.id, { location: e.target.value || undefined })
                     }
-                    className="h-8 w-full rounded-md border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
+                    className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   />
                 </Field>
@@ -276,6 +282,143 @@ export function PropertyPanel() {
                     style={inputStyle()}
                   />
                 </Field>
+
+                <p className="mb-2 mt-3 text-[10px] font-medium text-[var(--text-muted)]">网络</p>
+                <Field label="IP 地址" optional>
+                  <input
+                    type="text"
+                    value={d.data.ip ?? ''}
+                    placeholder="如 192.168.1.10"
+                    onFocus={snapshotOnFocus}
+                    onChange={(e) =>
+                      updateNodeData(d.id, { ip: e.target.value || undefined })
+                    }
+                    className="h-8 w-full rounded-md border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
+                    style={inputStyle()}
+                  />
+                </Field>
+                <Field label="子网掩码" optional>
+                  <input
+                    type="text"
+                    value={d.data.subnetMask ?? ''}
+                    placeholder="255.255.255.0 或 /24"
+                    onFocus={snapshotOnFocus}
+                    onChange={(e) =>
+                      updateNodeData(d.id, { subnetMask: e.target.value || undefined })
+                    }
+                    className="h-8 w-full rounded-md border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
+                    style={inputStyle()}
+                  />
+                </Field>
+                <Field label="网关" optional>
+                  <input
+                    type="text"
+                    value={d.data.gateway ?? ''}
+                    placeholder="如 192.168.1.1"
+                    onFocus={snapshotOnFocus}
+                    onChange={(e) =>
+                      updateNodeData(d.id, { gateway: e.target.value || undefined })
+                    }
+                    className="h-8 w-full rounded-md border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
+                    style={inputStyle()}
+                  />
+                </Field>
+                <Field label="MAC" optional>
+                  <input
+                    type="text"
+                    value={d.data.mac ?? ''}
+                    placeholder="选填"
+                    onFocus={snapshotOnFocus}
+                    onChange={(e) =>
+                      updateNodeData(d.id, { mac: e.target.value || undefined })
+                    }
+                    className="h-8 w-full rounded-md border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
+                    style={inputStyle()}
+                  />
+                </Field>
+
+                {(isRecorder || isSwitch || isPowered) && (
+                  <p className="mb-2 mt-3 text-[10px] font-medium text-[var(--text-muted)]">
+                    容量与供电
+                  </p>
+                )}
+                {isRecorder && (
+                  <Field label="最大通道数" optional>
+                    <input
+                      type="number"
+                      min={1}
+                      value={d.data.maxChannels ?? ''}
+                      placeholder="如 8 / 16 / 32"
+                      onFocus={snapshotOnFocus}
+                      onChange={(e) => {
+                        const v = e.target.value
+                        updateNodeData(d.id, {
+                          maxChannels: v === '' ? undefined : Number(v),
+                        })
+                      }}
+                      className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                      style={inputStyle()}
+                    />
+                  </Field>
+                )}
+                {isSwitch && (
+                  <>
+                    <Field label="PoE 预算 (W)" optional>
+                      <input
+                        type="number"
+                        min={0}
+                        value={d.data.poeBudgetW ?? ''}
+                        placeholder="如 120"
+                        onFocus={snapshotOnFocus}
+                        onChange={(e) => {
+                          const v = e.target.value
+                          updateNodeData(d.id, {
+                            poeBudgetW: v === '' ? undefined : Number(v),
+                          })
+                        }}
+                        className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                        style={inputStyle()}
+                      />
+                    </Field>
+                    <Field label="PoE 口数" optional>
+                      <input
+                        type="number"
+                        min={0}
+                        value={d.data.poePortCount ?? ''}
+                        placeholder="如 8"
+                        onFocus={snapshotOnFocus}
+                        onChange={(e) => {
+                          const v = e.target.value
+                          updateNodeData(d.id, {
+                            poePortCount: v === '' ? undefined : Number(v),
+                          })
+                        }}
+                        className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                        style={inputStyle()}
+                      />
+                    </Field>
+                  </>
+                )}
+                {isPowered && (
+                  <Field label="功耗 (W)" optional>
+                    <input
+                      type="number"
+                      min={0}
+                      step={0.1}
+                      value={d.data.powerDrawW ?? ''}
+                      placeholder="不填则用默认估算"
+                      onFocus={snapshotOnFocus}
+                      onChange={(e) => {
+                        const v = e.target.value
+                        updateNodeData(d.id, {
+                          powerDrawW: v === '' ? undefined : Number(v),
+                        })
+                      }}
+                      className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                      style={inputStyle()}
+                    />
+                  </Field>
+                )}
               </>
             )
           })()}
@@ -392,6 +535,40 @@ export function PropertyPanel() {
                 </option>
               ))}
             </select>
+          </Field>
+          <Field label="VLAN" optional>
+            <input
+              type="text"
+              value={edge.data && 'vlan' in edge.data ? (edge.data.vlan ?? '') : ''}
+              placeholder="如 10"
+              onFocus={snapshotOnFocus}
+              onChange={(e) =>
+                updateEdgeData(edge.id, { vlan: e.target.value || undefined })
+              }
+              className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+              style={inputStyle()}
+            />
+          </Field>
+          <Field label="带宽 (Mbps)" optional>
+            <input
+              type="number"
+              min={0}
+              value={
+                edge.data && 'bandwidthMbps' in edge.data
+                  ? (edge.data.bandwidthMbps ?? '')
+                  : ''
+              }
+              placeholder="选填"
+              onFocus={snapshotOnFocus}
+              onChange={(e) => {
+                const v = e.target.value
+                updateEdgeData(edge.id, {
+                  bandwidthMbps: v === '' ? undefined : Number(v),
+                })
+              }}
+              className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+              style={inputStyle()}
+            />
           </Field>
           <Field label="备注" optional>
             <textarea

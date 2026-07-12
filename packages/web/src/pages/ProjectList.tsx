@@ -28,11 +28,6 @@ function formatUpdatedAt(value?: string): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-function userInitial(displayName?: string, username?: string): string {
-  const name = displayName || username || '?'
-  return name.slice(0, 1).toUpperCase()
-}
-
 export function ProjectList({ onOpenProject }: ProjectListProps) {
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
@@ -143,22 +138,11 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
         className="flex h-14 shrink-0 items-center justify-between border-b px-6"
         style={{ background: 'var(--toolbar-bg)', borderColor: 'var(--panel-border)' }}
       >
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-tvt-500 text-sm font-bold text-white">
-            T
-          </div>
-          <div>
-            <div className="text-sm font-semibold text-[var(--text-primary)]">TVT 网络架构图</div>
-            <div className="text-[10px] text-[var(--text-muted)]">项目列表</div>
-          </div>
-        </div>
+        <div className="text-sm font-semibold text-[var(--text-primary)]">TVT 网络架构图</div>
         <div className="flex items-center gap-3">
           <span className="text-xs text-[var(--text-secondary)]">
             {user?.displayName || user?.username}
           </span>
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-tvt-100 text-xs font-medium text-tvt-600">
-            {userInitial(user?.displayName, user?.username)}
-          </div>
           <button
             type="button"
             onClick={() => logout()}
@@ -361,7 +345,6 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
                   {typeof project.edgeCount === 'number' && (
                     <span>{project.edgeCount} 连线</span>
                   )}
-                  {project.author && <span className="ml-auto">{project.author}</span>}
                 </div>
               </button>
             ))}

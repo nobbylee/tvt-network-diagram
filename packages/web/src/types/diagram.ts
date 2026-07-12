@@ -8,6 +8,14 @@ export type DeviceNodeData = {
   icon: DeviceIconType | string
   model?: string
   ip?: string
+  subnetMask?: string
+  gateway?: string
+  maxChannels?: number
+  poeBudgetW?: number
+  poePortCount?: number
+  powerDrawW?: number
+  mac?: string
+  location?: string
   notes?: string
 }
 
@@ -29,6 +37,8 @@ export type ConnectionEdgeData = {
   sourcePort?: string
   targetPort?: string
   connectionType?: '网线' | '光纤' | 'PoE' | 'WiFi' | '4G' | string
+  vlan?: string
+  bandwidthMbps?: number
   notes?: string
 }
 

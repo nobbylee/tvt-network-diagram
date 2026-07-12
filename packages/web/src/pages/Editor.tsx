@@ -5,6 +5,8 @@ import { Toolbar } from '../components/Toolbar'
 import { DeviceLibrary } from '../components/DeviceLibrary'
 import { CanvasArea } from '../components/CanvasArea'
 import { PropertyPanel } from '../components/PropertyPanel'
+import { ValidationController } from '../components/ValidationController'
+import { ValidationPanel } from '../components/ValidationPanel'
 import { useCanvasStore } from '../stores/canvasStore'
 
 type EditorProps = {
@@ -16,6 +18,7 @@ type EditorProps = {
 
 export function Editor({ projectId, projectName, customer = '', onBack }: EditorProps) {
   const resetDiagram = useCanvasStore((s) => s.resetDiagram)
+  const dirty = useCanvasStore((s) => s.dirty)
   const [name, setName] = useState(projectName)
   const [customerName, setCustomerName] = useState(customer)
   const [loading, setLoading] = useState(true)
@@ -55,6 +58,22 @@ export function Editor({ projectId, projectName, customer = '', onBack }: Editor
     }
   }, [projectId, resetDiagram])
 
+  // 未保存离开页面提示
+  useEffect(() => {
+    function onBeforeUnload(e: BeforeUnloadEvent) {
+      if (!useCanvasStore.getState().dirty) return
+      e.preventDefault()
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+  }, [])
+
+  function handleBack() {
+    if (dirty && !window.confirm('有未保存的修改，确定返回？')) return
+    onBack()
+  }
+
   if (loading) {
     return (
       <div
@@ -77,7 +96,7 @@ export function Editor({ projectId, projectName, customer = '', onBack }: Editor
         </p>
         <button
           type="button"
-          onClick={onBack}
+          onClick={handleBack}
           className="h-9 rounded-lg bg-tvt-500 px-4 text-sm text-white hover:bg-tvt-600"
         >
           返回项目列表
@@ -88,15 +107,19 @@ export function Editor({ projectId, projectName, customer = '', onBack }: Editor
 
   return (
     <div className="flex h-full min-w-[1280px] flex-col" style={{ background: 'var(--app-bg)' }}>
+      <ValidationController />
       <Toolbar
         projectId={projectId}
         projectName={name}
         customer={customerName}
-        onBack={onBack}
+        onBack={handleBack}
       />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         <DeviceLibrary />
-        <CanvasArea />
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <CanvasArea />
+          <ValidationPanel />
+        </div>
         <PropertyPanel />
       </div>
     </div>

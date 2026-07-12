@@ -58,3 +58,8 @@ export function verifyToken(token: string): JwtPayload {
     username: String((decoded as jwt.JwtPayload & { username?: string }).username ?? ''),
   }
 }
+
+/** 是否管理员（可查看全部项目） */
+export function isAdminUsername(username: string | undefined | null): boolean {
+  return username === 'admin'
+}

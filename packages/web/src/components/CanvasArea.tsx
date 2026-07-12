@@ -22,6 +22,7 @@ import { AnnotationEdgeView } from '../edges/AnnotationEdge'
 import { SnapGuideLine } from './SnapGuideLine'
 import { useCanvasStore } from '../stores/canvasStore'
 import { useUiStore } from '../stores/uiStore'
+import { useValidationStore } from '../stores/validationStore'
 import type { DeviceItem } from '../data/deviceLibrary'
 import { snapPointToDevice } from '../utils/snap'
 
@@ -52,8 +53,16 @@ function CanvasInner() {
     y2: number
   } | null>(null)
 
-  const { screenToFlowPosition, zoomIn, zoomOut, setViewport, getViewport } =
-    useReactFlow()
+  const {
+    screenToFlowPosition,
+    zoomIn,
+    zoomOut,
+    setViewport,
+    getViewport,
+    setCenter,
+    getZoom,
+    getNode,
+  } = useReactFlow()
 
   const nodes = useCanvasStore((s) => s.nodes)
   const edges = useCanvasStore((s) => s.edges)
@@ -72,6 +81,45 @@ function CanvasInner() {
   const pasteClipboard = useCanvasStore((s) => s.pasteClipboard)
   const undo = useCanvasStore((s) => s.undo)
   const redo = useCanvasStore((s) => s.redo)
+
+  const focusTarget = useValidationStore((s) => s.focusTarget)
+  const clearFocus = useValidationStore((s) => s.clearFocus)
+
+  // 响应校验面板「定位」请求
+  useEffect(() => {
+    if (!focusTarget) return
+    const zoom = Math.max(getZoom(), 0.8)
+    if (focusTarget.nodeId) {
+      setSelectedNodeId(focusTarget.nodeId)
+      const node = getNode(focusTarget.nodeId)
+      if (node) {
+        const w = typeof node.measured?.width === 'number' ? node.measured.width : 160
+        const h = typeof node.measured?.height === 'number' ? node.measured.height : 80
+        setCenter(node.position.x + w / 2, node.position.y + h / 2, { zoom, duration: 280 })
+      }
+    } else if (focusTarget.edgeId) {
+      setSelectedEdgeId(focusTarget.edgeId)
+      const edge = edges.find((e) => e.id === focusTarget.edgeId)
+      if (edge) {
+        const src = getNode(edge.source)
+        if (src) {
+          const w = typeof src.measured?.width === 'number' ? src.measured.width : 160
+          const h = typeof src.measured?.height === 'number' ? src.measured.height : 80
+          setCenter(src.position.x + w / 2, src.position.y + h / 2, { zoom, duration: 280 })
+        }
+      }
+    }
+    clearFocus()
+  }, [
+    focusTarget,
+    clearFocus,
+    setSelectedNodeId,
+    setSelectedEdgeId,
+    getNode,
+    getZoom,
+    setCenter,
+    edges,
+  ])
 
   const isDraggingDevice = useUiStore((s) => s.isDraggingDevice)
   const setDraggingDevice = useUiStore((s) => s.setDraggingDevice)
@@ -476,7 +524,7 @@ function CanvasInner() {
       </ReactFlow>
 
       {canvasTool === 'arrow' && (
-        <div className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-lg border bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--text-secondary)] shadow-sm"
+        <div className="tvt-canvas-overlay pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-lg border bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--text-secondary)] shadow-sm"
           style={{ borderColor: 'var(--panel-border)' }}
         >
           {arrowStarted
@@ -486,7 +534,7 @@ function CanvasInner() {
       )}
 
       {canvasTool === 'text' && (
-        <div className="pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-lg border bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--text-secondary)] shadow-sm"
+        <div className="tvt-canvas-overlay pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-lg border bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--text-secondary)] shadow-sm"
           style={{ borderColor: 'var(--panel-border)' }}
         >
           点击画布放置文本框 · Esc 取消
@@ -494,7 +542,7 @@ function CanvasInner() {
       )}
 
       {showDropHint && (
-        <div className="pointer-events-none absolute inset-3 rounded-xl border-2 border-dashed border-[var(--accent)] bg-[var(--accent-soft)]/40">
+        <div className="tvt-canvas-overlay pointer-events-none absolute inset-3 rounded-xl border-2 border-dashed border-[var(--accent)] bg-[var(--accent-soft)]/40">
           <div className="flex h-full items-center justify-center">
             <span className="rounded-lg bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--accent)] shadow-sm">
               松开鼠标放置设备
@@ -504,7 +552,7 @@ function CanvasInner() {
       )}
 
       {deviceCount === 0 && !showDropHint && canvasTool === 'select' && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="tvt-canvas-overlay pointer-events-none absolute inset-0 flex items-center justify-center">
           <div
             className="max-w-xs rounded-xl border px-5 py-4 text-center"
             style={{ background: 'var(--panel-bg)', borderColor: 'var(--panel-border)' }}
@@ -518,7 +566,7 @@ function CanvasInner() {
       )}
 
       <div
-        className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-3 rounded-lg border px-3 py-1.5 text-[10px] text-[var(--text-muted)]"
+        className="tvt-canvas-overlay pointer-events-none absolute bottom-3 left-3 flex items-center gap-3 rounded-lg border px-3 py-1.5 text-[10px] text-[var(--text-muted)]"
         style={{ background: 'var(--panel-bg)', borderColor: 'var(--panel-border)' }}
       >
         <span>{deviceCount} 个设备</span>
@@ -531,7 +579,7 @@ function CanvasInner() {
 
 export function CanvasArea() {
   return (
-    <main className="relative flex-1 overflow-hidden" style={{ background: 'var(--canvas-bg)' }}>
+    <main className="relative min-h-0 flex-1 overflow-hidden" style={{ background: 'var(--canvas-bg)' }}>
       <ReactFlowProvider>
         <CanvasInner />
       </ReactFlowProvider>

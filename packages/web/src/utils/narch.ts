@@ -17,6 +17,14 @@ export type NarchNode = {
   model?: string
   name?: string
   ip?: string
+  subnetMask?: string
+  gateway?: string
+  maxChannels?: number
+  poeBudgetW?: number
+  poePortCount?: number
+  powerDrawW?: number
+  mac?: string
+  location?: string
   notes?: string
   position: { x: number; y: number }
   /** 文本标注 */
@@ -35,6 +43,8 @@ export type NarchEdge = {
   sourcePort?: string
   targetPort?: string
   connectionType?: string
+  vlan?: string
+  bandwidthMbps?: number
   notes?: string
   /** annotation = 标注箭头 */
   kind?: 'connection' | 'annotation'
@@ -75,6 +85,11 @@ const BRAND_FROM_IMPORT: Record<string, string> = {
   通用: 'generic',
 }
 
+/** 空字符串导入为 undefined */
+function emptyToUndefined(value: string | undefined): string | undefined {
+  return value ? value : undefined
+}
+
 /** 导出 brand：优先中文标签，未知值原样保留 */
 export function brandToNarch(brand: string): string {
   return BRAND_TO_EXPORT[brand] ?? brand
@@ -98,7 +113,7 @@ export function diagramToNarch(
   },
 ): NarchFile {
   return {
-    version: '1.1',
+    version: '1.2',
     meta: {
       projectName: meta.projectName,
       customer: meta.customer ?? '',
@@ -136,6 +151,14 @@ export function diagramToNarch(
         model: d.data.model ?? '',
         name: d.data.name,
         ip: d.data.ip ?? '',
+        subnetMask: d.data.subnetMask ?? '',
+        gateway: d.data.gateway ?? '',
+        maxChannels: d.data.maxChannels,
+        poeBudgetW: d.data.poeBudgetW,
+        poePortCount: d.data.poePortCount,
+        powerDrawW: d.data.powerDrawW,
+        mac: d.data.mac ?? '',
+        location: d.data.location ?? '',
         notes: d.data.notes ?? '',
         position: { x: d.position.x, y: d.position.y },
       }
@@ -162,6 +185,8 @@ export function diagramToNarch(
         sourcePort: c.data?.sourcePort ?? '',
         targetPort: c.data?.targetPort ?? '',
         connectionType: c.data?.connectionType ?? '',
+        vlan: c.data?.vlan ?? '',
+        bandwidthMbps: c.data?.bandwidthMbps,
         notes: c.data?.notes ?? '',
       }
     }),
@@ -207,9 +232,17 @@ export function narchToDiagram(file: NarchFile): {
         name: n.name || '未命名设备',
         brand: brandFromNarch(n.brand ?? 'generic'),
         icon: n.type || 'server',
-        model: n.model || undefined,
-        ip: n.ip || undefined,
-        notes: n.notes || undefined,
+        model: emptyToUndefined(n.model),
+        ip: emptyToUndefined(n.ip),
+        subnetMask: emptyToUndefined(n.subnetMask),
+        gateway: emptyToUndefined(n.gateway),
+        maxChannels: n.maxChannels,
+        poeBudgetW: n.poeBudgetW,
+        poePortCount: n.poePortCount,
+        powerDrawW: n.powerDrawW,
+        mac: emptyToUndefined(n.mac),
+        location: emptyToUndefined(n.location),
+        notes: emptyToUndefined(n.notes),
       },
     }
     return node
@@ -238,10 +271,12 @@ export function narchToDiagram(file: NarchFile): {
       target: e.target,
       type: 'labeled',
       data: {
-        sourcePort: e.sourcePort || undefined,
-        targetPort: e.targetPort || undefined,
-        connectionType: e.connectionType || undefined,
-        notes: e.notes || undefined,
+        sourcePort: emptyToUndefined(e.sourcePort),
+        targetPort: emptyToUndefined(e.targetPort),
+        connectionType: emptyToUndefined(e.connectionType),
+        vlan: emptyToUndefined(e.vlan),
+        bandwidthMbps: e.bandwidthMbps,
+        notes: emptyToUndefined(e.notes),
       },
     }
     return edge
