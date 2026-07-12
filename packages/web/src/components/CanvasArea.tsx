@@ -420,6 +420,10 @@ function CanvasInner() {
               : undefined,
       }}
     >
+      <div
+        className="pointer-events-none absolute inset-y-0 left-12 z-10 w-[2px]"
+        style={{ background: 'var(--margin-rule)' }}
+      />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -451,11 +455,11 @@ function CanvasInner() {
         proOptions={{ hideAttribution: true }}
       >
         <Background
-          id="dots"
-          variant={BackgroundVariant.Dots}
-          gap={20}
-          size={1}
-          color="var(--canvas-grid)"
+          id="rules"
+          variant={BackgroundVariant.Lines}
+          gap={[100000, 32]}
+          lineWidth={1}
+          color="var(--bg-rule)"
         />
         <Controls
           showInteractive={false}
