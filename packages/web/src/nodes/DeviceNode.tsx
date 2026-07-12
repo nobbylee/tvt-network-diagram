@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
-import { DeviceIcon, hasPhotoIcon } from '../components/DeviceIcon'
+import { DeviceIcon } from '../components/DeviceIcon'
 import { brandColors } from '../data/deviceLibrary'
 import { useValidationStore } from '../stores/validationStore'
 import type { DeviceNode } from '../types/diagram'
@@ -14,10 +14,8 @@ function resolveBrandColor(brand: string) {
 function DeviceNodeComponent({ id, data, selected }: NodeProps<DeviceNode>) {
   const brandColor = resolveBrandColor(String(data.brand))
   const hasExtra = Boolean(data.model || data.ip)
-  const isPhoto = hasPhotoIcon(String(data.icon), String(data.brand))
-  const isNvr = isPhoto && (data.icon === 'nvr' || data.icon === 'dvr')
-  const iconBox = isNvr ? 'h-12 w-12' : isPhoto ? 'h-10 w-10' : 'h-8 w-8 rounded-[var(--radius-sm)]'
-  const iconSize = isNvr ? 48 : isPhoto ? 36 : 20
+  const iconBox = 'h-8 w-8 rounded-[var(--radius-sm)]'
+  const iconSize = 20
 
   // 返回原始字符串，避免 selector 每次新建数组触发无限更新
   const issueLevel = useValidationStore((s) => {
@@ -69,13 +67,9 @@ function DeviceNodeComponent({ id, data, selected }: NodeProps<DeviceNode>) {
         <div className="flex items-center gap-2">
           <div
             className={`flex shrink-0 items-center justify-center ${iconBox}`}
-            style={isPhoto ? undefined : { background: `${brandColor}14` }}
+            style={{ background: `${brandColor}14` }}
           >
-            <DeviceIcon
-              type={String(data.icon)}
-              brand={String(data.brand)}
-              size={iconSize}
-            />
+            <DeviceIcon type={String(data.icon)} size={iconSize} />
           </div>
           <div className="min-w-0 flex-1">
             <div className="nb-title truncate text-xs">

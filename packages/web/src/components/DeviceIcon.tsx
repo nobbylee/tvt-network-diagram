@@ -1,57 +1,31 @@
 import type { ReactElement } from 'react'
-import { brandColors } from '../data/deviceLibrary'
-import ipcBulletImg from '../assets/devices/ipc-bullet.png'
-import ipcDomeImg from '../assets/devices/ipc-dome.png'
-import ptzImg from '../assets/devices/ptz.png'
-import nvrImg from '../assets/devices/nvr.png'
-import accessImg from '../assets/devices/access.png'
-import mobileAppImg from '../assets/devices/mobile-app.png'
 
 type DeviceIconProps = {
   type: string
-  brand?: string
   size?: number
 }
 
-/** 实拍图图标（有产品图的类型优先用图片） */
-export const photoIcons: Record<string, string> = {
-  'ipc-bullet': ipcBulletImg,
-  'ipc-dome': ipcDomeImg,
-  ptz: ptzImg,
-  nvr: nvrImg,
-  dvr: nvrImg,
-  access: accessImg,
-  'mobile-app': mobileAppImg,
-}
-
-export function hasPhotoIcon(type: string, brand?: string) {
-  if (brand && brand !== 'tvt') return false
-  return type in photoIcons
-}
-
 function ServerRack({
-  color,
   size,
   badge,
 }: {
-  color: string
   size: number
   badge: string
 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <rect x="4" y="3" width="16" height="5" rx="1.2" stroke={color} strokeWidth="1.5" />
-      <rect x="4" y="10" width="16" height="5" rx="1.2" stroke={color} strokeWidth="1.5" />
-      <rect x="4" y="17" width="16" height="4" rx="1.2" stroke={color} strokeWidth="1.5" />
-      <circle cx="7" cy="5.5" r="0.8" fill={color} />
-      <circle cx="7" cy="12.5" r="0.8" fill={color} />
+      <rect x="4" y="3" width="16" height="5" rx="1.2" stroke="var(--ink)" strokeWidth="1.5" />
+      <rect x="4" y="10" width="16" height="5" rx="1.2" stroke="var(--ink)" strokeWidth="1.5" />
+      <rect x="4" y="17" width="16" height="4" rx="1.2" stroke="var(--ink)" strokeWidth="1.5" />
+      <circle cx="7" cy="5.5" r="0.8" fill="var(--ink)" />
+      <circle cx="7" cy="12.5" r="0.8" fill="var(--ink)" />
       <text
         x="16"
         y="13.2"
         textAnchor="middle"
         fontSize="5.5"
         fontWeight="700"
-        fill={color}
+        fill="var(--ink)"
       >
         {badge}
       </text>
@@ -59,28 +33,8 @@ function ServerRack({
   )
 }
 
-export function DeviceIcon({ type, brand = 'tvt', size = 24 }: DeviceIconProps) {
-  const color =
-    brand in brandColors
-      ? brandColors[brand as keyof typeof brandColors]
-      : brandColors.generic
-
-  // TVT 有实拍图时优先显示产品图（略放大；录像机再大一档）
-  if (brand === 'tvt' && type in photoIcons) {
-    const scale = type === 'nvr' || type === 'dvr' ? 1.65 : 1.35
-    const photoSize = Math.round(size * scale)
-    return (
-      <img
-        src={photoIcons[type]}
-        alt=""
-        width={photoSize}
-        height={photoSize}
-        draggable={false}
-        className="object-contain select-none"
-        style={{ display: 'block', pointerEvents: 'none' }}
-      />
-    )
-  }
+export function DeviceIcon({ type, size = 24 }: DeviceIconProps) {
+  const color = 'var(--ink)'
 
   const icons: Record<string, ReactElement> = {
     'ipc-turret': (
@@ -118,9 +72,9 @@ export function DeviceIcon({ type, brand = 'tvt', size = 24 }: DeviceIconProps) 
         <circle cx="7" cy="14" r="1" fill={color} />
       </svg>
     ),
-    'server-forward': <ServerRack color={color} size={size} badge="转" />,
-    'server-storage': <ServerRack color={color} size={size} badge="存" />,
-    'server-manage': <ServerRack color={color} size={size} badge="管" />,
+    'server-forward': <ServerRack size={size} badge="转" />,
+    'server-storage': <ServerRack size={size} badge="存" />,
+    'server-manage': <ServerRack size={size} badge="管" />,
     decoder: (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
         <rect x="3" y="8" width="12" height="8" rx="1.5" stroke={color} strokeWidth="1.5" />
@@ -184,7 +138,6 @@ export function DeviceIcon({ type, brand = 'tvt', size = 24 }: DeviceIconProps) 
         />
       </svg>
     ),
-    // 线稿回退（无实拍图时）
     'ipc-bullet': (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
         <rect x="4" y="8" width="14" height="8" rx="2" stroke={color} strokeWidth="1.5" />
@@ -228,6 +181,13 @@ export function DeviceIcon({ type, brand = 'tvt', size = 24 }: DeviceIconProps) 
         <rect x="6" y="3" width="12" height="18" rx="2" stroke={color} strokeWidth="1.5" />
         <circle cx="12" cy="12" r="2" stroke={color} strokeWidth="1.5" />
         <line x1="12" y1="16" x2="12" y2="18" stroke={color} strokeWidth="1.5" />
+      </svg>
+    ),
+    'mobile-app': (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <rect x="7" y="2" width="10" height="20" rx="2" stroke={color} strokeWidth="1.5" />
+        <line x1="7" y1="17.5" x2="17" y2="17.5" stroke={color} strokeWidth="1.5" />
+        <circle cx="12" cy="19.6" r="0.9" fill={color} />
       </svg>
     ),
   }

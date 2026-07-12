@@ -6,7 +6,7 @@ import {
   type DeviceCategory,
   type DeviceItem,
 } from '../data/deviceLibrary'
-import { DeviceIcon, hasPhotoIcon } from './DeviceIcon'
+import { DeviceIcon } from './DeviceIcon'
 import {
   ConfirmDeleteModal,
   DeviceFormModal,
@@ -24,8 +24,6 @@ function DeviceCard({
   onDelete: () => void
 }) {
   const brandColor = brandColors[item.brand]
-  const isPhoto = hasPhotoIcon(item.icon, item.brand)
-  const isNvr = isPhoto && (item.icon === 'nvr' || item.icon === 'dvr')
   const setDraggingDevice = useUiStore((s) => s.setDraggingDevice)
 
   return (
@@ -44,16 +42,10 @@ function DeviceCard({
       }}
     >
       <div
-        className={`flex shrink-0 items-center justify-center ${
-          isNvr ? 'h-11 w-11' : isPhoto ? 'h-9 w-9' : 'h-8 w-8 rounded-[var(--radius-sm)]'
-        }`}
-        style={isPhoto ? undefined : { background: `${brandColor}14` }}
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius-sm)]"
+        style={{ background: `${brandColor}14` }}
       >
-        <DeviceIcon
-          type={item.icon}
-          brand={item.brand}
-          size={isNvr ? 40 : isPhoto ? 32 : 20}
-        />
+        <DeviceIcon type={item.icon} size={20} />
       </div>
       <span className="min-w-0 flex-1 truncate text-xs text-[var(--text-primary)] group-hover:text-[var(--accent)]">
         {item.name}

@@ -113,7 +113,7 @@ export function DeviceFormModal({ title, initial, onSubmit, onClose }: DeviceFor
                       background: selected ? 'var(--accent-soft)' : 'var(--panel-bg)',
                     }}
                   >
-                    <DeviceIcon type={opt.value} brand={brand} size={20} />
+                    <DeviceIcon type={opt.value} size={20} />
                     <span
                       className="truncate text-[9px]"
                       style={{ color: selected ? color : 'var(--text-muted)' }}
