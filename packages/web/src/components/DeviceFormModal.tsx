@@ -48,7 +48,7 @@ export function DeviceFormModal({ title, initial, onSubmit, onClose }: DeviceFor
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm rounded-xl border p-5 shadow-lg"
+        className="w-full max-w-sm rounded-[var(--radius-md)] border p-5 shadow-lg"
         style={{ background: 'var(--panel-bg)', borderColor: 'var(--panel-border)' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -57,7 +57,7 @@ export function DeviceFormModal({ title, initial, onSubmit, onClose }: DeviceFor
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
+            className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.4" />
@@ -74,7 +74,7 @@ export function DeviceFormModal({ title, initial, onSubmit, onClose }: DeviceFor
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="如 筒形 IPC"
-              className="h-9 w-full rounded-md border px-3 text-sm outline-none focus:border-[var(--accent)]"
+              className="h-9 w-full rounded-[var(--radius-sm)] border px-3 text-sm outline-none focus:border-[var(--accent)]"
               style={inputStyle()}
             />
           </div>
@@ -84,7 +84,7 @@ export function DeviceFormModal({ title, initial, onSubmit, onClose }: DeviceFor
             <select
               value={brand}
               onChange={(e) => setBrand(e.target.value as DeviceBrand)}
-              className="h-9 w-full rounded-md border px-3 text-sm outline-none focus:border-[var(--accent)]"
+              className="h-9 w-full rounded-[var(--radius-sm)] border px-3 text-sm outline-none focus:border-[var(--accent)]"
               style={inputStyle()}
             >
               {(Object.keys(brandLabels) as DeviceBrand[]).map((key) => (
@@ -107,7 +107,7 @@ export function DeviceFormModal({ title, initial, onSubmit, onClose }: DeviceFor
                     type="button"
                     title={opt.label}
                     onClick={() => setIcon(opt.value)}
-                    className="flex flex-col items-center gap-1 rounded-lg border p-2 transition-colors"
+                    className="flex flex-col items-center gap-1 rounded-[var(--radius-sm)] border p-2 transition-colors"
                     style={{
                       borderColor: selected ? 'var(--accent)' : 'var(--panel-border)',
                       background: selected ? 'var(--accent-soft)' : 'var(--panel-bg)',
@@ -130,7 +130,7 @@ export function DeviceFormModal({ title, initial, onSubmit, onClose }: DeviceFor
             <button
               type="button"
               onClick={onClose}
-              className="h-9 flex-1 rounded-lg border text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+              className="h-9 flex-1 rounded-[var(--radius-sm)] border text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
               style={{ borderColor: 'var(--panel-border)' }}
             >
               取消
@@ -138,7 +138,7 @@ export function DeviceFormModal({ title, initial, onSubmit, onClose }: DeviceFor
             <button
               type="submit"
               disabled={!name.trim()}
-              className="h-9 flex-1 rounded-lg bg-tvt-500 text-sm font-medium text-white hover:bg-tvt-600 disabled:opacity-40"
+              className="h-9 flex-1 rounded-[var(--radius-sm)] bg-[var(--accent)] text-sm font-medium text-[var(--text-on-accent)] hover:bg-[var(--accent-hover)] disabled:opacity-40"
             >
               保存
             </button>
@@ -162,7 +162,7 @@ export function ConfirmDeleteModal({ item, onConfirm, onClose }: ConfirmDeletePr
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xs rounded-xl border p-5"
+        className="w-full max-w-xs rounded-[var(--radius-md)] border p-5"
         style={{ background: 'var(--panel-bg)', borderColor: 'var(--panel-border)' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -174,7 +174,7 @@ export function ConfirmDeleteModal({ item, onConfirm, onClose }: ConfirmDeletePr
           <button
             type="button"
             onClick={onClose}
-            className="h-9 flex-1 rounded-lg border text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+            className="h-9 flex-1 rounded-[var(--radius-sm)] border text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
             style={{ borderColor: 'var(--panel-border)' }}
           >
             取消
@@ -182,7 +182,7 @@ export function ConfirmDeleteModal({ item, onConfirm, onClose }: ConfirmDeletePr
           <button
             type="button"
             onClick={onConfirm}
-            className="h-9 flex-1 rounded-lg bg-red-500 text-sm font-medium text-white hover:bg-red-600"
+            className="h-9 flex-1 rounded-[var(--radius-sm)] bg-red-500 text-sm font-medium text-white hover:bg-red-600"
           >
             删除
           </button>

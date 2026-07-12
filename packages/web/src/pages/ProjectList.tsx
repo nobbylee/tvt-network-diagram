@@ -176,7 +176,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
               type="button"
               disabled={importing}
               onClick={() => fileInputRef.current?.click()}
-              className="flex h-9 items-center gap-2 rounded-lg border px-3 text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] disabled:opacity-60"
+              className="flex h-9 items-center gap-2 rounded-[var(--radius-sm)] border px-3 text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] disabled:opacity-60"
               style={{ borderColor: 'var(--panel-border)', background: 'var(--panel-bg)' }}
             >
               {importing ? '导入中…' : '导入 .narch'}
@@ -184,7 +184,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
             <button
               type="button"
               onClick={() => setShowCreate(true)}
-              className="flex h-9 items-center gap-2 rounded-lg bg-tvt-500 px-4 text-sm font-medium text-white transition-colors hover:bg-tvt-600"
+              className="flex h-9 items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--accent)] px-4 text-sm font-medium text-[var(--text-on-accent)] transition-colors hover:bg-[var(--accent-hover)]"
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M7 2v10M2 7h10" stroke="currentColor" strokeWidth="1.5" />
@@ -210,7 +210,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="搜索项目或客户名..."
-            className="h-9 w-full rounded-lg border pl-9 pr-3 text-sm outline-none focus:border-[var(--accent)]"
+            className="h-9 w-full rounded-[var(--radius-sm)] border pl-9 pr-3 text-sm outline-none focus:border-[var(--accent)]"
             style={{
               background: 'var(--input-bg)',
               borderColor: 'var(--input-border)',
@@ -221,7 +221,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
 
         {error && (
           <div
-            className="mb-4 flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm"
+            className="mb-4 flex items-center justify-between gap-3 rounded-[var(--radius-sm)] px-3 py-2 text-sm"
             style={{ background: '#fef2f2', color: '#b91c1c' }}
           >
             <span>{error}</span>
@@ -242,7 +242,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
             <button
               type="button"
               onClick={() => setShowCreate(true)}
-              className="flex min-h-[140px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed transition-colors hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
+              className="flex min-h-[140px] flex-col items-center justify-center gap-2 rounded-[var(--radius-md)] border border-dashed transition-colors hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
               style={{ borderColor: 'var(--panel-border)', background: 'var(--panel-bg)' }}
             >
               <div
@@ -263,7 +263,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
                 onClick={() =>
                   onOpenProject(project.id, project.name, project.customer ?? undefined)
                 }
-                className="group relative flex min-h-[140px] flex-col rounded-xl border p-4 text-left transition-all hover:border-[var(--accent)] hover:shadow-sm"
+                className="group relative flex min-h-[140px] flex-col rounded-[var(--radius-md)] border p-4 text-left transition-all hover:border-[var(--accent)] hover:shadow-sm"
                 style={{
                   borderColor: 'var(--panel-border)',
                   background: 'var(--panel-bg)',
@@ -271,7 +271,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
               >
                 <div className="mb-3 flex items-start justify-between">
                   <div
-                    className="flex h-9 w-9 items-center justify-center rounded-lg"
+                    className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)]"
                     style={{ background: 'var(--accent-soft)' }}
                   >
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -361,7 +361,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
           <div
-            className="w-full max-w-md rounded-xl border p-6 shadow-lg"
+            className="w-full max-w-md rounded-[var(--radius-md)] border p-6 shadow-lg"
             style={{ background: 'var(--panel-bg)', borderColor: 'var(--panel-border)' }}
           >
             <h2 className="mb-4 text-base font-semibold text-[var(--text-primary)]">新建项目</h2>
@@ -373,7 +373,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="未命名项目"
-                  className="h-9 rounded-lg border px-3 text-sm outline-none focus:border-[var(--accent)]"
+                  className="h-9 rounded-[var(--radius-sm)] border px-3 text-sm outline-none focus:border-[var(--accent)]"
                   style={{
                     background: 'var(--input-bg)',
                     borderColor: 'var(--input-border)',
@@ -387,7 +387,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
                   value={newCustomer}
                   onChange={(e) => setNewCustomer(e.target.value)}
                   placeholder="客户名"
-                  className="h-9 rounded-lg border px-3 text-sm outline-none focus:border-[var(--accent)]"
+                  className="h-9 rounded-[var(--radius-sm)] border px-3 text-sm outline-none focus:border-[var(--accent)]"
                   style={{
                     background: 'var(--input-bg)',
                     borderColor: 'var(--input-border)',
@@ -404,7 +404,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
                   setNewName('')
                   setNewCustomer('')
                 }}
-                className="h-9 rounded-lg px-3 text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+                className="h-9 rounded-[var(--radius-sm)] px-3 text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
               >
                 取消
               </button>
@@ -412,7 +412,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
                 type="button"
                 disabled={creating}
                 onClick={() => void handleCreate()}
-                className="h-9 rounded-lg bg-tvt-500 px-4 text-sm font-medium text-white hover:bg-tvt-600 disabled:opacity-60"
+                className="h-9 rounded-[var(--radius-sm)] bg-[var(--accent)] px-4 text-sm font-medium text-[var(--text-on-accent)] hover:bg-[var(--accent-hover)] disabled:opacity-60"
               >
                 {creating ? '创建中…' : '创建并打开'}
               </button>

@@ -83,7 +83,7 @@ export function PropertyPanel() {
           type="button"
           title="展开属性面板"
           onClick={toggleProperties}
-          className="flex h-8 w-8 items-center justify-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] hover:text-[var(--accent)]"
+          className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] hover:text-[var(--accent)]"
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.4" />
@@ -114,7 +114,7 @@ export function PropertyPanel() {
             type="button"
             title="折叠属性面板"
             onClick={toggleProperties}
-            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
+            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
           >
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M5 2l4 4-4 4" stroke="currentColor" strokeWidth="1.3" />
@@ -150,7 +150,7 @@ export function PropertyPanel() {
                     rows={4}
                     onFocus={snapshotOnFocus}
                     onChange={(e) => updateNodeData(t.id, { text: e.target.value })}
-                    className="w-full resize-none rounded-md border px-2.5 py-2 text-xs outline-none focus:border-[var(--accent)]"
+                    className="w-full resize-none rounded-[var(--radius-sm)] border px-2.5 py-2 text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   />
                 </Field>
@@ -166,7 +166,7 @@ export function PropertyPanel() {
                         fontSize: Math.min(32, Math.max(10, Number(e.target.value) || 13)),
                       })
                     }
-                    className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                    className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   />
                 </Field>
@@ -224,7 +224,7 @@ export function PropertyPanel() {
                     value={d.data.name}
                     onFocus={snapshotOnFocus}
                     onChange={(e) => updateNodeData(d.id, { name: e.target.value })}
-                    className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                    className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   />
                 </Field>
@@ -233,7 +233,7 @@ export function PropertyPanel() {
                     value={String(d.data.brand)}
                     onFocus={snapshotOnFocus}
                     onChange={(e) => updateNodeData(d.id, { brand: e.target.value })}
-                    className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                    className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   >
                     {brandOptions.map((opt) => (
@@ -252,7 +252,7 @@ export function PropertyPanel() {
                     onChange={(e) =>
                       updateNodeData(d.id, { model: e.target.value || undefined })
                     }
-                    className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                    className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   />
                 </Field>
@@ -265,7 +265,7 @@ export function PropertyPanel() {
                     onChange={(e) =>
                       updateNodeData(d.id, { location: e.target.value || undefined })
                     }
-                    className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                    className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   />
                 </Field>
@@ -278,7 +278,7 @@ export function PropertyPanel() {
                     onChange={(e) =>
                       updateNodeData(d.id, { notes: e.target.value || undefined })
                     }
-                    className="w-full resize-none rounded-md border px-2.5 py-2 text-xs outline-none focus:border-[var(--accent)]"
+                    className="w-full resize-none rounded-[var(--radius-sm)] border px-2.5 py-2 text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   />
                 </Field>
@@ -293,7 +293,7 @@ export function PropertyPanel() {
                     onChange={(e) =>
                       updateNodeData(d.id, { ip: e.target.value || undefined })
                     }
-                    className="h-8 w-full rounded-md border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
+                    className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   />
                 </Field>
@@ -306,7 +306,7 @@ export function PropertyPanel() {
                     onChange={(e) =>
                       updateNodeData(d.id, { subnetMask: e.target.value || undefined })
                     }
-                    className="h-8 w-full rounded-md border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
+                    className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   />
                 </Field>
@@ -319,7 +319,7 @@ export function PropertyPanel() {
                     onChange={(e) =>
                       updateNodeData(d.id, { gateway: e.target.value || undefined })
                     }
-                    className="h-8 w-full rounded-md border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
+                    className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   />
                 </Field>
@@ -332,7 +332,7 @@ export function PropertyPanel() {
                     onChange={(e) =>
                       updateNodeData(d.id, { mac: e.target.value || undefined })
                     }
-                    className="h-8 w-full rounded-md border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
+                    className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 font-mono text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
                   />
                 </Field>
@@ -356,7 +356,7 @@ export function PropertyPanel() {
                           maxChannels: v === '' ? undefined : Number(v),
                         })
                       }}
-                      className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                      className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
                       style={inputStyle()}
                     />
                   </Field>
@@ -376,7 +376,7 @@ export function PropertyPanel() {
                             poeBudgetW: v === '' ? undefined : Number(v),
                           })
                         }}
-                        className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                        className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
                         style={inputStyle()}
                       />
                     </Field>
@@ -393,7 +393,7 @@ export function PropertyPanel() {
                             poePortCount: v === '' ? undefined : Number(v),
                           })
                         }}
-                        className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                        className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
                         style={inputStyle()}
                       />
                     </Field>
@@ -414,7 +414,7 @@ export function PropertyPanel() {
                           powerDrawW: v === '' ? undefined : Number(v),
                         })
                       }}
-                      className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+                      className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
                       style={inputStyle()}
                     />
                   </Field>
@@ -470,7 +470,7 @@ export function PropertyPanel() {
               onChange={(e) =>
                 updateEdgeData(edge.id, { label: e.target.value || undefined })
               }
-              className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+              className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
               style={inputStyle()}
             />
           </Field>
@@ -478,7 +478,7 @@ export function PropertyPanel() {
       ) : edge ? (
         <div className="panel-scroll flex-1 overflow-y-auto px-4 py-3">
           <div
-            className="mb-3 rounded-lg border px-3 py-2 text-[10px] text-[var(--text-secondary)]"
+            className="mb-3 rounded-[var(--radius-sm)] border px-3 py-2 text-[10px] text-[var(--text-secondary)]"
             style={{ borderColor: 'var(--panel-border)', background: 'var(--hover-bg)' }}
           >
             <div className="truncate">
@@ -500,7 +500,7 @@ export function PropertyPanel() {
               onChange={(e) =>
                 updateEdgeData(edge.id, { sourcePort: e.target.value || undefined })
               }
-              className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+              className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
               style={inputStyle()}
             />
           </Field>
@@ -513,7 +513,7 @@ export function PropertyPanel() {
               onChange={(e) =>
                 updateEdgeData(edge.id, { targetPort: e.target.value || undefined })
               }
-              className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+              className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
               style={inputStyle()}
             />
           </Field>
@@ -526,7 +526,7 @@ export function PropertyPanel() {
               }
               onFocus={snapshotOnFocus}
               onChange={(e) => updateEdgeData(edge.id, { connectionType: e.target.value })}
-              className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+              className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
               style={inputStyle()}
             >
               {connectionTypes.map((t) => (
@@ -545,7 +545,7 @@ export function PropertyPanel() {
               onChange={(e) =>
                 updateEdgeData(edge.id, { vlan: e.target.value || undefined })
               }
-              className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+              className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
               style={inputStyle()}
             />
           </Field>
@@ -566,7 +566,7 @@ export function PropertyPanel() {
                   bandwidthMbps: v === '' ? undefined : Number(v),
                 })
               }}
-              className="h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
+              className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
               style={inputStyle()}
             />
           </Field>
@@ -579,7 +579,7 @@ export function PropertyPanel() {
               onChange={(e) =>
                 updateEdgeData(edge.id, { notes: e.target.value || undefined })
               }
-              className="w-full resize-none rounded-md border px-2.5 py-2 text-xs outline-none focus:border-[var(--accent)]"
+              className="w-full resize-none rounded-[var(--radius-sm)] border px-2.5 py-2 text-xs outline-none focus:border-[var(--accent)]"
               style={inputStyle()}
             />
           </Field>

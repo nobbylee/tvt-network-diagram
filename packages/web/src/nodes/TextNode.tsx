@@ -33,7 +33,7 @@ function TextNodeComponent({ id, data, selected }: NodeProps<TextNode>) {
 
   return (
     <div
-      className="min-w-[80px] max-w-[280px] rounded-md border px-2.5 py-1.5 shadow-sm"
+      className="min-w-[80px] max-w-[280px] rounded-[var(--radius-md)] border px-2.5 py-1.5 shadow-sm"
       style={{
         background: 'var(--panel-bg)',
         borderColor: selected ? 'var(--accent)' : 'var(--panel-border)',

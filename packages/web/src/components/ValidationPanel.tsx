@@ -81,7 +81,7 @@ export function ValidationPanel() {
               {visible.map((issue) => (
                 <li
                   key={issue.id}
-                  className="flex items-start gap-2 rounded-md px-2 py-1.5 hover:bg-[var(--hover-bg)]"
+                  className="flex items-start gap-2 rounded-[var(--radius-sm)] px-2 py-1.5 hover:bg-[var(--hover-bg)]"
                 >
                   <SeverityBadge severity={issue.severity} />
                   <div className="min-w-0 flex-1">

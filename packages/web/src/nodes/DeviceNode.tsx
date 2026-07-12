@@ -16,7 +16,7 @@ function DeviceNodeComponent({ id, data, selected }: NodeProps<DeviceNode>) {
   const hasExtra = Boolean(data.model || data.ip)
   const isPhoto = hasPhotoIcon(String(data.icon), String(data.brand))
   const isNvr = isPhoto && (data.icon === 'nvr' || data.icon === 'dvr')
-  const iconBox = isNvr ? 'h-12 w-12' : isPhoto ? 'h-10 w-10' : 'h-8 w-8 rounded-md'
+  const iconBox = isNvr ? 'h-12 w-12' : isPhoto ? 'h-10 w-10' : 'h-8 w-8 rounded-[var(--radius-sm)]'
   const iconSize = isNvr ? 48 : isPhoto ? 36 : 20
 
   // 返回原始字符串，避免 selector 每次新建数组触发无限更新
@@ -39,7 +39,7 @@ function DeviceNodeComponent({ id, data, selected }: NodeProps<DeviceNode>) {
 
   return (
     <div
-      className="relative w-40 rounded-lg border bg-[var(--node-bg)] text-left shadow-sm"
+      className="relative w-40 rounded-[var(--radius-sm)] border bg-[var(--node-bg)] text-left shadow-sm"
       style={{
         borderColor,
         borderWidth: selected || hasError || hasWarning ? 2 : 1,

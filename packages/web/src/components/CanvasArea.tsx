@@ -459,7 +459,7 @@ function CanvasInner() {
         />
         <Controls
           showInteractive={false}
-          className="!overflow-hidden !rounded-lg !border !shadow-none"
+          className="!overflow-hidden !rounded-[var(--radius-sm)] !border !shadow-none"
           style={{
             borderColor: 'var(--panel-border)',
             background: 'var(--panel-bg)',
@@ -468,7 +468,7 @@ function CanvasInner() {
         <MiniMap
           pannable
           zoomable
-          className="!overflow-hidden !rounded-lg !border"
+          className="!overflow-hidden !rounded-[var(--radius-sm)] !border"
           style={{
             borderColor: 'var(--panel-border)',
             background: 'var(--panel-bg)',
@@ -524,7 +524,7 @@ function CanvasInner() {
       </ReactFlow>
 
       {canvasTool === 'arrow' && (
-        <div className="tvt-canvas-overlay pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-lg border bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--text-secondary)] shadow-sm"
+        <div className="tvt-canvas-overlay pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-[var(--radius-sm)] border bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--text-secondary)] shadow-sm"
           style={{ borderColor: 'var(--panel-border)' }}
         >
           {arrowStarted
@@ -534,7 +534,7 @@ function CanvasInner() {
       )}
 
       {canvasTool === 'text' && (
-        <div className="tvt-canvas-overlay pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-lg border bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--text-secondary)] shadow-sm"
+        <div className="tvt-canvas-overlay pointer-events-none absolute left-1/2 top-3 z-10 -translate-x-1/2 rounded-[var(--radius-sm)] border bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--text-secondary)] shadow-sm"
           style={{ borderColor: 'var(--panel-border)' }}
         >
           点击画布放置文本框 · Esc 取消
@@ -542,9 +542,9 @@ function CanvasInner() {
       )}
 
       {showDropHint && (
-        <div className="tvt-canvas-overlay pointer-events-none absolute inset-3 rounded-xl border-2 border-dashed border-[var(--accent)] bg-[var(--accent-soft)]/40">
+        <div className="tvt-canvas-overlay pointer-events-none absolute inset-3 rounded-[var(--radius-md)] border-2 border-dashed border-[var(--accent)] bg-[var(--accent-soft)]/40">
           <div className="flex h-full items-center justify-center">
-            <span className="rounded-lg bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--accent)] shadow-sm">
+            <span className="rounded-[var(--radius-sm)] bg-[var(--panel-bg)] px-3 py-1.5 text-xs text-[var(--accent)] shadow-sm">
               松开鼠标放置设备
             </span>
           </div>
@@ -554,7 +554,7 @@ function CanvasInner() {
       {deviceCount === 0 && !showDropHint && canvasTool === 'select' && (
         <div className="tvt-canvas-overlay pointer-events-none absolute inset-0 flex items-center justify-center">
           <div
-            className="max-w-xs rounded-xl border px-5 py-4 text-center"
+            className="max-w-xs rounded-[var(--radius-md)] border px-5 py-4 text-center"
             style={{ background: 'var(--panel-bg)', borderColor: 'var(--panel-border)' }}
           >
             <p className="text-sm text-[var(--text-primary)]">画布为空</p>
@@ -566,7 +566,7 @@ function CanvasInner() {
       )}
 
       <div
-        className="tvt-canvas-overlay pointer-events-none absolute bottom-3 left-3 flex items-center gap-3 rounded-lg border px-3 py-1.5 text-[10px] text-[var(--text-muted)]"
+        className="tvt-canvas-overlay pointer-events-none absolute bottom-3 left-3 flex items-center gap-3 rounded-[var(--radius-sm)] border px-3 py-1.5 text-[10px] text-[var(--text-muted)]"
         style={{ background: 'var(--panel-bg)', borderColor: 'var(--panel-border)' }}
       >
         <span>{deviceCount} 个设备</span>

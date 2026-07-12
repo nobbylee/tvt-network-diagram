@@ -44,7 +44,7 @@ function IconButton({
       title={title}
       onClick={onClick}
       disabled={disabled}
-      className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-35 ${
+      className={`flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] transition-colors disabled:cursor-not-allowed disabled:opacity-35 ${
         active
           ? 'bg-[var(--accent-soft)] text-[var(--accent)]'
           : 'text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] hover:text-[var(--text-primary)]'
@@ -235,7 +235,7 @@ export function Toolbar({
         type="button"
         onClick={onBack}
         title="返回项目列表"
-        className="flex h-8 w-8 items-center justify-center rounded-md text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] hover:text-[var(--text-primary)]"
+        className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] hover:text-[var(--text-primary)]"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.4" />
@@ -257,7 +257,7 @@ export function Toolbar({
           type="button"
           disabled={saving}
           onClick={() => void handleSave()}
-          className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] disabled:opacity-60"
+          className="flex h-8 items-center gap-1.5 rounded-[var(--radius-sm)] px-2.5 text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] disabled:opacity-60"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" strokeWidth="1.2" />
@@ -278,7 +278,7 @@ export function Toolbar({
         <button
           type="button"
           onClick={() => importRef.current?.click()}
-          className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)]"
+          className="flex h-8 items-center gap-1.5 rounded-[var(--radius-sm)] px-2.5 text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)]"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.2" />
@@ -291,7 +291,7 @@ export function Toolbar({
             type="button"
             disabled={exporting}
             onClick={() => setExportMenuOpen((o) => !o)}
-            className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] disabled:opacity-60"
+            className="flex h-8 items-center gap-1.5 rounded-[var(--radius-sm)] px-2.5 text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] disabled:opacity-60"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M8 10V2M5 5l3-3 3 3" stroke="currentColor" strokeWidth="1.2" />
@@ -304,7 +304,7 @@ export function Toolbar({
           </button>
           {exportMenuOpen && (
             <div
-              className="absolute left-0 top-full z-50 mt-1 min-w-[160px] overflow-hidden rounded-lg border py-1 shadow-sm"
+              className="absolute left-0 top-full z-50 mt-1 min-w-[160px] overflow-hidden rounded-[var(--radius-sm)] border py-1 shadow-sm"
               style={{
                 background: 'var(--panel-bg)',
                 borderColor: 'var(--panel-border)',
@@ -457,7 +457,7 @@ export function Toolbar({
             type="button"
             title="打开问题面板"
             onClick={() => setPanelOpen(true)}
-            className="flex h-8 items-center gap-1 rounded-md px-2 text-[10px]"
+            className="flex h-8 items-center gap-1 rounded-[var(--radius-sm)] px-2 text-[10px]"
           >
             {errorCount > 0 && (
               <span
@@ -485,7 +485,7 @@ export function Toolbar({
             bumpRun()
             setPanelOpen(true)
           }}
-          className="flex h-8 items-center rounded-md px-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+          className="flex h-8 items-center rounded-[var(--radius-sm)] px-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
         >
           校验
         </button>

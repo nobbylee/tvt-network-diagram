@@ -97,7 +97,7 @@ export function Editor({ projectId, projectName, customer = '', onBack }: Editor
         <button
           type="button"
           onClick={handleBack}
-          className="h-9 rounded-lg bg-tvt-500 px-4 text-sm text-white hover:bg-tvt-600"
+          className="h-9 rounded-[var(--radius-sm)] bg-[var(--accent)] px-4 text-sm text-[var(--text-on-accent)] hover:bg-[var(--accent-hover)]"
         >
           返回项目列表
         </button>

@@ -45,7 +45,7 @@ export function Login({ onSuccess }: LoginProps) {
       style={{ background: 'var(--app-bg)' }}
     >
       <div
-        className="w-full max-w-sm rounded-2xl border p-8 shadow-sm"
+        className="w-full max-w-sm rounded-[var(--radius-md)] border p-8 shadow-sm"
         style={{ background: 'var(--panel-bg)', borderColor: 'var(--panel-border)' }}
       >
         <div className="mb-6 flex flex-col items-center text-center">
@@ -61,7 +61,7 @@ export function Login({ onSuccess }: LoginProps) {
               autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="h-10 rounded-lg border px-3 text-sm outline-none focus:border-[var(--accent)]"
+              className="h-10 rounded-[var(--radius-sm)] border px-3 text-sm outline-none focus:border-[var(--accent)]"
               style={{
                 background: 'var(--input-bg)',
                 borderColor: 'var(--input-border)',
@@ -78,7 +78,7 @@ export function Login({ onSuccess }: LoginProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="请输入密码"
-              className="h-10 rounded-lg border px-3 text-sm outline-none focus:border-[var(--accent)]"
+              className="h-10 rounded-[var(--radius-sm)] border px-3 text-sm outline-none focus:border-[var(--accent)]"
               style={{
                 background: 'var(--input-bg)',
                 borderColor: 'var(--input-border)',
@@ -89,7 +89,7 @@ export function Login({ onSuccess }: LoginProps) {
 
           {error && (
             <div
-              className="rounded-lg px-3 py-2 text-sm"
+              className="rounded-[var(--radius-sm)] px-3 py-2 text-sm"
               style={{ background: '#fef2f2', color: '#b91c1c' }}
             >
               {error}
@@ -99,7 +99,7 @@ export function Login({ onSuccess }: LoginProps) {
           <button
             type="submit"
             disabled={loading}
-            className="mt-1 flex h-10 items-center justify-center rounded-lg bg-tvt-500 text-sm font-medium text-white transition-colors hover:bg-tvt-600 disabled:opacity-60"
+            className="mt-1 flex h-10 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--accent)] text-sm font-medium text-[var(--text-on-accent)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-60"
           >
             {loading ? '登录中…' : '登录'}
           </button>

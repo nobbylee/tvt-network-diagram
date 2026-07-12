@@ -37,7 +37,7 @@ function DeviceCard({
         setDraggingDevice(true)
       }}
       onDragEnd={() => setDraggingDevice(false)}
-      className="group flex cursor-grab items-center gap-2 rounded-lg border px-2 py-1.5 transition-all hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] active:cursor-grabbing"
+      className="group flex cursor-grab items-center gap-2 rounded-[var(--radius-sm)] border px-2 py-1.5 transition-all hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] active:cursor-grabbing"
       style={{
         borderColor: 'var(--panel-border)',
         background: 'var(--panel-bg)',
@@ -45,7 +45,7 @@ function DeviceCard({
     >
       <div
         className={`flex shrink-0 items-center justify-center ${
-          isNvr ? 'h-11 w-11' : isPhoto ? 'h-9 w-9' : 'h-8 w-8 rounded-md'
+          isNvr ? 'h-11 w-11' : isPhoto ? 'h-9 w-9' : 'h-8 w-8 rounded-[var(--radius-sm)]'
         }`}
         style={isPhoto ? undefined : { background: `${brandColor}14` }}
       >
@@ -208,7 +208,7 @@ export function DeviceLibrary() {
           type="button"
           title="展开元件库"
           onClick={toggleLibrary}
-          className="flex h-8 w-8 items-center justify-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] hover:text-[var(--accent)]"
+          className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] hover:text-[var(--accent)]"
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M5 2l5 5-5 5" stroke="currentColor" strokeWidth="1.4" />
@@ -241,7 +241,7 @@ export function DeviceLibrary() {
                 type="button"
                 title="新增元件"
                 onClick={() => setModal({ type: 'add' })}
-                className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--accent)] hover:bg-[var(--accent-soft)]"
+                className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] text-[var(--accent)] hover:bg-[var(--accent-soft)]"
               >
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                   <path d="M6 2v8M2 6h8" stroke="currentColor" strokeWidth="1.4" />
@@ -251,7 +251,7 @@ export function DeviceLibrary() {
                 type="button"
                 title="折叠元件库"
                 onClick={toggleLibrary}
-                className="flex h-6 w-6 items-center justify-center rounded-md text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
+                className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
               >
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                   <path d="M7 2L3 6l4 4" stroke="currentColor" strokeWidth="1.3" />
@@ -275,7 +275,7 @@ export function DeviceLibrary() {
               placeholder="搜索设备..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-8 w-full rounded-md border pl-8 pr-3 text-xs outline-none focus:border-[var(--accent)]"
+              className="h-8 w-full rounded-[var(--radius-sm)] border pl-8 pr-3 text-xs outline-none focus:border-[var(--accent)]"
               style={{
                 background: 'var(--input-bg)',
                 borderColor: 'var(--input-border)',
@@ -293,7 +293,7 @@ export function DeviceLibrary() {
                 <button
                   type="button"
                   onClick={() => toggle(category.id)}
-                  className="flex min-w-0 flex-1 items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+                  className="flex min-w-0 flex-1 items-center gap-1.5 rounded-[var(--radius-sm)] px-2 py-1.5 text-left text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
                 >
                   <svg
                     width="12"
