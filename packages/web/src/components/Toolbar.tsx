@@ -1,15 +1,22 @@
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { exportNarch, updateProject } from '../api/projects'
 import { ApiError } from '../api/client'
 import { useAuthStore } from '../stores/authStore'
 import { useCanvasStore } from '../stores/canvasStore'
 import { useUiStore } from '../stores/uiStore'
+import { useValidationStore } from '../stores/validationStore'
 import {
   diagramToNarch,
   downloadNarchFile,
   narchToDiagram,
   readNarchFile,
 } from '../utils/narch'
+import {
+  captureDiagramPng,
+  downloadPngDataUrl,
+  safeExportFilename,
+} from '../utils/exportImage'
+import { exportDiagramPdf } from '../utils/exportPdf'
 
 type ToolbarProps = {
   projectId: string
@@ -48,11 +55,6 @@ function IconButton({
   )
 }
 
-function userInitial(displayName?: string, username?: string): string {
-  const name = displayName || username || '?'
-  return name.slice(0, 1).toUpperCase()
-}
-
 export function Toolbar({
   projectId,
   projectName,
@@ -74,10 +76,32 @@ export function Toolbar({
   const canvasTool = useUiStore((s) => s.canvasTool)
   const setCanvasTool = useUiStore((s) => s.setCanvasTool)
   const user = useAuthStore((s) => s.user)
+  const markClean = useCanvasStore((s) => s.markClean)
+
+  const validationEnabled = useValidationStore((s) => s.enabled)
+  const setValidationEnabled = useValidationStore((s) => s.setEnabled)
+  const bumpRun = useValidationStore((s) => s.bumpRun)
+  const setPanelOpen = useValidationStore((s) => s.setPanelOpen)
+  // 分别订阅原始字段，避免 selector 每次返回新数组导致无限重渲染
+  const issues = useValidationStore((s) => s.issues)
+  const ignoredIds = useValidationStore((s) => s.ignoredIds)
+  const { errorCount, warningCount } = useMemo(() => {
+    let errors = 0
+    let warnings = 0
+    for (const i of issues) {
+      if (ignoredIds.includes(i.id)) continue
+      if (i.severity === 'error') errors += 1
+      else warnings += 1
+    }
+    return { errorCount: errors, warningCount: warnings }
+  }, [issues, ignoredIds])
 
   const [status, setStatus] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [exporting, setExporting] = useState(false)
+  const [exportMenuOpen, setExportMenuOpen] = useState(false)
   const importRef = useRef<HTMLInputElement>(null)
+  const exportMenuRef = useRef<HTMLDivElement>(null)
   const statusTimer = useRef<number | null>(null)
 
   function showStatus(msg: string, ms = 2500) {
@@ -85,6 +109,18 @@ export function Toolbar({
     if (statusTimer.current) window.clearTimeout(statusTimer.current)
     statusTimer.current = window.setTimeout(() => setStatus(null), ms)
   }
+
+  // 点击外部关闭导出菜单
+  useEffect(() => {
+    if (!exportMenuOpen) return
+    function onDocClick(e: MouseEvent) {
+      if (!exportMenuRef.current?.contains(e.target as Node)) {
+        setExportMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', onDocClick)
+    return () => document.removeEventListener('mousedown', onDocClick)
+  }, [exportMenuOpen])
 
   async function handleSave() {
     setSaving(true)
@@ -95,6 +131,7 @@ export function Toolbar({
         customer: customer || undefined,
         diagram: { nodes, edges },
       })
+      markClean()
       showStatus('已保存')
     } catch (err) {
       showStatus(err instanceof ApiError ? err.message : '保存失败', 4000)
@@ -103,20 +140,73 @@ export function Toolbar({
     }
   }
 
-  async function handleExport() {
+  // Ctrl/⌘+S 保存
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault()
+        void handleSave()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 仅绑定快捷键
+  }, [projectId, projectName, customer])
+
+  async function handleExportNarch() {
+    setExportMenuOpen(false)
+    setExporting(true)
     try {
-      await exportNarch(projectId, `${projectName || 'project'}.narch`)
-      showStatus('已导出')
+      await exportNarch(projectId, safeExportFilename(projectName || 'project', '.narch'))
+      showStatus('已导出 .narch')
     } catch {
-      // 后端不可用时，用当前画布本地导出
       const { nodes, edges } = useCanvasStore.getState()
       const narch = diagramToNarch(nodes, edges, {
         projectName,
         customer,
         author: user?.displayName || user?.username,
       })
-      downloadNarchFile(narch, `${projectName || 'project'}.narch`)
-      showStatus('已本地导出')
+      downloadNarchFile(narch, safeExportFilename(projectName || 'project', '.narch'))
+      showStatus('已本地导出 .narch')
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  async function handleExportPng() {
+    setExportMenuOpen(false)
+    setExporting(true)
+    showStatus('正在生成 PNG…', 8000)
+    try {
+      const { nodes } = useCanvasStore.getState()
+      const dataUrl = await captureDiagramPng(nodes)
+      downloadPngDataUrl(dataUrl, projectName || 'project')
+      showStatus('已导出 PNG')
+    } catch (err) {
+      showStatus(err instanceof Error ? err.message : 'PNG 导出失败', 4000)
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  async function handleExportPdf() {
+    setExportMenuOpen(false)
+    setExporting(true)
+    showStatus('正在生成 PDF…', 12000)
+    try {
+      const { nodes, edges } = useCanvasStore.getState()
+      const dataUrl = await captureDiagramPng(nodes)
+      await exportDiagramPdf(nodes, edges, {
+        projectName,
+        customer,
+        author: user?.displayName || user?.username,
+        diagramDataUrl: dataUrl,
+      })
+      showStatus('已导出 PDF')
+    } catch (err) {
+      showStatus(err instanceof Error ? err.message : 'PDF 导出失败', 4000)
+    } finally {
+      setExporting(false)
     }
   }
 
@@ -153,9 +243,6 @@ export function Toolbar({
       </button>
 
       <div className="flex items-center gap-2.5">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-tvt-500 text-xs font-bold text-white">
-          T
-        </div>
         <span className="text-sm font-semibold text-[var(--text-primary)]">TVT 网络架构图</span>
         <span className="text-[var(--text-muted)]">/</span>
         <span className="max-w-[200px] truncate text-sm text-[var(--text-secondary)]">
@@ -199,17 +286,54 @@ export function Toolbar({
           </svg>
           导入
         </button>
-        <button
-          type="button"
-          onClick={() => void handleExport()}
-          className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)]"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 10V2M5 5l3-3 3 3" stroke="currentColor" strokeWidth="1.2" />
-            <path d="M3 12h10" stroke="currentColor" strokeWidth="1.2" />
-          </svg>
-          导出
-        </button>
+        <div className="relative" ref={exportMenuRef}>
+          <button
+            type="button"
+            disabled={exporting}
+            onClick={() => setExportMenuOpen((o) => !o)}
+            className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] disabled:opacity-60"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 10V2M5 5l3-3 3 3" stroke="currentColor" strokeWidth="1.2" />
+              <path d="M3 12h10" stroke="currentColor" strokeWidth="1.2" />
+            </svg>
+            {exporting ? '导出中…' : '导出'}
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="opacity-60">
+              <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.2" />
+            </svg>
+          </button>
+          {exportMenuOpen && (
+            <div
+              className="absolute left-0 top-full z-50 mt-1 min-w-[160px] overflow-hidden rounded-lg border py-1 shadow-sm"
+              style={{
+                background: 'var(--panel-bg)',
+                borderColor: 'var(--panel-border)',
+              }}
+            >
+              <button
+                type="button"
+                className="flex w-full px-3 py-2 text-left text-xs text-[var(--text-primary)] hover:bg-[var(--hover-bg)]"
+                onClick={() => void handleExportNarch()}
+              >
+                导出 .narch
+              </button>
+              <button
+                type="button"
+                className="flex w-full px-3 py-2 text-left text-xs text-[var(--text-primary)] hover:bg-[var(--hover-bg)]"
+                onClick={() => void handleExportPng()}
+              >
+                导出 PNG 图片
+              </button>
+              <button
+                type="button"
+                className="flex w-full px-3 py-2 text-left text-xs text-[var(--text-primary)] hover:bg-[var(--hover-bg)]"
+                onClick={() => void handleExportPdf()}
+              >
+                导出 PDF（含图签）
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {status && (
@@ -312,6 +436,63 @@ export function Toolbar({
 
       <div className="h-5 w-px bg-[var(--panel-border)]" />
 
+      <div className="flex items-center gap-1">
+        <IconButton
+          title={validationEnabled ? '关闭实时校验' : '开启实时校验'}
+          active={validationEnabled}
+          onClick={() => setValidationEnabled(!validationEnabled)}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M3 8l3 3 7-7"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </IconButton>
+        {validationEnabled && (errorCount > 0 || warningCount > 0) && (
+          <button
+            type="button"
+            title="打开问题面板"
+            onClick={() => setPanelOpen(true)}
+            className="flex h-8 items-center gap-1 rounded-md px-2 text-[10px]"
+          >
+            {errorCount > 0 && (
+              <span
+                className="rounded-full px-1.5 py-0.5 text-white"
+                style={{ background: 'var(--danger)' }}
+              >
+                {errorCount}
+              </span>
+            )}
+            {warningCount > 0 && (
+              <span
+                className="rounded-full px-1.5 py-0.5 text-white"
+                style={{ background: 'var(--warning)' }}
+              >
+                {warningCount}
+              </span>
+            )}
+          </button>
+        )}
+        <button
+          type="button"
+          title="立即校验"
+          onClick={() => {
+            setValidationEnabled(true)
+            bumpRun()
+            setPanelOpen(true)
+          }}
+          className="flex h-8 items-center rounded-md px-2 text-xs text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]"
+        >
+          校验
+        </button>
+      </div>
+
+      <div className="h-5 w-px bg-[var(--panel-border)]" />
+
       <div className="flex items-center gap-0.5">
         <IconButton
           title={libraryCollapsed ? '展开元件库' : '折叠元件库'}
@@ -333,12 +514,6 @@ export function Toolbar({
             <path d="M2 4h6M2 8h6M2 12h4" stroke="currentColor" strokeWidth="1.2" />
           </svg>
         </IconButton>
-      </div>
-
-      <div className="ml-auto flex items-center gap-2">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-tvt-100 text-xs font-medium text-tvt-600">
-          {userInitial(user?.displayName, user?.username)}
-        </div>
       </div>
     </header>
   )

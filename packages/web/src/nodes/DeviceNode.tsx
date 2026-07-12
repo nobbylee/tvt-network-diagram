@@ -2,6 +2,7 @@ import { memo } from 'react'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { DeviceIcon, hasPhotoIcon } from '../components/DeviceIcon'
 import { brandColors } from '../data/deviceLibrary'
+import { useValidationStore } from '../stores/validationStore'
 import type { DeviceNode } from '../types/diagram'
 
 function resolveBrandColor(brand: string) {
@@ -10,7 +11,7 @@ function resolveBrandColor(brand: string) {
     : brandColors.generic
 }
 
-function DeviceNodeComponent({ data, selected }: NodeProps<DeviceNode>) {
+function DeviceNodeComponent({ id, data, selected }: NodeProps<DeviceNode>) {
   const brandColor = resolveBrandColor(String(data.brand))
   const hasExtra = Boolean(data.model || data.ip)
   const isPhoto = hasPhotoIcon(String(data.icon), String(data.brand))
@@ -18,15 +19,40 @@ function DeviceNodeComponent({ data, selected }: NodeProps<DeviceNode>) {
   const iconBox = isNvr ? 'h-12 w-12' : isPhoto ? 'h-10 w-10' : 'h-8 w-8 rounded-md'
   const iconSize = isNvr ? 48 : isPhoto ? 36 : 20
 
+  // 返回原始字符串，避免 selector 每次新建数组触发无限更新
+  const issueLevel = useValidationStore((s) => {
+    let level: 'error' | 'warning' | null = null
+    for (const i of s.issues) {
+      if (s.ignoredIds.includes(i.id)) continue
+      if (!i.nodeIds?.includes(id)) continue
+      if (i.severity === 'error') return 'error'
+      if (level == null) level = 'warning'
+    }
+    return level
+  })
+  const hasError = issueLevel === 'error'
+  const hasWarning = issueLevel === 'warning'
+
+  let borderColor = selected ? 'var(--node-selected)' : 'var(--node-border)'
+  if (hasError) borderColor = 'var(--danger)'
+  else if (hasWarning) borderColor = 'var(--warning)'
+
   return (
     <div
-      className="w-40 rounded-lg border bg-[var(--node-bg)] text-left shadow-sm"
+      className="relative w-40 rounded-lg border bg-[var(--node-bg)] text-left shadow-sm"
       style={{
-        borderColor: selected ? 'var(--node-selected)' : 'var(--node-border)',
-        borderWidth: selected ? 2 : 1,
+        borderColor,
+        borderWidth: selected || hasError || hasWarning ? 2 : 1,
         boxShadow: selected ? '0 0 0 3px rgba(0, 102, 204, 0.12)' : 'none',
       }}
     >
+      {hasError && (
+        <span
+          className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full"
+          style={{ background: 'var(--danger)' }}
+          title="存在配置错误"
+        />
+      )}
       <Handle
         type="target"
         position={Position.Left}

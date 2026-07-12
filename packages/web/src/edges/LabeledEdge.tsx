@@ -5,6 +5,7 @@ import {
   getBezierPath,
   type EdgeProps,
 } from '@xyflow/react'
+import { useValidationStore } from '../stores/validationStore'
 import type { ConnectionEdge } from '../types/diagram'
 
 function buildLabel(data: ConnectionEdge['data']): string | undefined {
@@ -41,6 +42,22 @@ function LabeledEdgeComponent({
   })
 
   const label = buildLabel(data)
+  const issueLevel = useValidationStore((s) => {
+    let level: 'error' | 'warning' | null = null
+    for (const i of s.issues) {
+      if (s.ignoredIds.includes(i.id)) continue
+      if (!i.edgeIds?.includes(id)) continue
+      if (i.severity === 'error') return 'error'
+      if (level == null) level = 'warning'
+    }
+    return level
+  })
+  const hasError = issueLevel === 'error'
+  const hasWarning = issueLevel === 'warning'
+
+  let stroke = selected ? 'var(--accent)' : 'rgba(47, 93, 80, 0.55)'
+  if (hasError) stroke = 'var(--danger)'
+  else if (hasWarning) stroke = 'var(--warning)'
 
   return (
     <>
@@ -49,8 +66,8 @@ function LabeledEdgeComponent({
         path={edgePath}
         markerEnd={markerEnd}
         style={{
-          stroke: selected ? 'var(--accent)' : 'rgba(0, 102, 204, 0.55)',
-          strokeWidth: selected ? 2.5 : 2,
+          stroke,
+          strokeWidth: selected || hasError || hasWarning ? 2.5 : 2,
         }}
       />
       {label && (
@@ -60,7 +77,12 @@ function LabeledEdgeComponent({
             style={{
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
               background: 'var(--panel-bg)',
-              borderColor: selected ? 'var(--accent)' : 'var(--panel-border)',
+              borderColor:
+                hasError || hasWarning
+                  ? stroke
+                  : selected
+                    ? 'var(--accent)'
+                    : 'var(--panel-border)',
             }}
           >
             {label}
