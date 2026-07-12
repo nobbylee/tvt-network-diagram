@@ -62,7 +62,7 @@ function DeviceNodeComponent({ id, data, selected }: NodeProps<DeviceNode>) {
         className="!h-2.5 !w-2.5 !border-2 !border-white !bg-[var(--accent)]"
       />
 
-      <div className="h-0.5 rounded-t-lg" style={{ background: brandColor }} />
+      <div className="h-0.5 rounded-t-[var(--radius-sm)]" style={{ background: brandColor }} />
       <div className={hasExtra ? 'p-2.5' : 'p-2'}>
         <div className="flex items-center gap-2">
           <div
