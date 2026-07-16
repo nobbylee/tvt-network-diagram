@@ -242,9 +242,7 @@ export function Toolbar({
         </svg>
       </button>
 
-      <div className="flex items-center gap-2.5">
-        <span className="text-sm font-semibold text-[var(--text-primary)]">TVT 网络架构图</span>
-        <span className="text-[var(--text-muted)]">/</span>
+      <div className="flex items-center">
         <span className="max-w-[200px] truncate text-sm text-[var(--text-secondary)]">
           {projectName}
         </span>

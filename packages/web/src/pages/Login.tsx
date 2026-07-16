@@ -1,43 +1,38 @@
-import { useState, type FormEvent } from 'react'
-import { login as loginApi } from '../api/auth'
+import { useEffect, useState } from 'react'
+import { handoff } from '../api/auth'
 import { ApiError } from '../api/client'
 import { useAuthStore } from '../stores/authStore'
 
-type LoginProps = {
-  onSuccess?: () => void
-}
-
-export function Login({ onSuccess }: LoginProps) {
+/**
+ * 免密登录网关：只接受从「TVT技术服务部平台」跳转过来时带的 ?token=&name= 参数，
+ * 不提供账号密码输入框。文件名/组件名沿用 Login 是为了减少改动面（App.tsx 的引用不用改）。
+ */
+export function Login() {
   const login = useAuthStore((s) => s.login)
-  const [username, setUsername] = useState('admin')
-  const [password, setPassword] = useState('')
+  const [status, setStatus] = useState<'exchanging' | 'error' | 'no-token'>('exchanging')
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    setError(null)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const token = params.get('token')
+    const name = params.get('name')
 
-    if (!username.trim() || !password) {
-      setError('请输入用户名和密码')
+    if (!token) {
+      setStatus('no-token')
       return
     }
 
-    setLoading(true)
-    try {
-      const res = await loginApi(username.trim(), password)
-      login(res.token, res.user)
-      onSuccess?.()
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message)
-      } else {
-        setError('登录失败，请稍后重试')
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
+    handoff(token, name ?? undefined)
+      .then((res) => {
+        login(res.token, res.user)
+        // 登录凭证不宜长期留在地址栏/浏览器历史里
+        window.history.replaceState(null, '', window.location.pathname)
+      })
+      .catch((err) => {
+        setStatus('error')
+        setError(err instanceof ApiError ? err.message : '登录失败，请回到主平台重新进入')
+      })
+  }, [login])
 
   return (
     <div
@@ -45,69 +40,29 @@ export function Login({ onSuccess }: LoginProps) {
       style={{ background: 'var(--app-bg)' }}
     >
       <div
-        className="w-full max-w-sm rounded-[var(--radius-md)] border p-8 shadow-sm"
+        className="w-full max-w-sm rounded-[var(--radius-md)] border p-8 text-center shadow-sm"
         style={{ background: 'var(--panel-bg)', borderColor: 'var(--panel-border)' }}
       >
-        <div className="mb-6 flex flex-col items-center text-center">
-          <h1 className="nb-title text-lg">TVT 网络架构图</h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">登录后管理与编辑拓扑项目</p>
-        </div>
+        <h1 className="nb-title text-lg">网络拓扑图绘制工具</h1>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-[var(--text-secondary)]">用户名</span>
-            <input
-              type="text"
-              autoComplete="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="h-10 rounded-[var(--radius-sm)] border px-3 text-sm outline-none focus:border-[var(--accent)]"
-              style={{
-                background: 'var(--input-bg)',
-                borderColor: 'var(--input-border)',
-                color: 'var(--text-primary)',
-              }}
-            />
-          </label>
+        {status === 'exchanging' && (
+          <p className="mt-4 text-sm text-[var(--text-secondary)]">正在登录…</p>
+        )}
 
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-[var(--text-secondary)]">密码</span>
-            <input
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="请输入密码"
-              className="h-10 rounded-[var(--radius-sm)] border px-3 text-sm outline-none focus:border-[var(--accent)]"
-              style={{
-                background: 'var(--input-bg)',
-                borderColor: 'var(--input-border)',
-                color: 'var(--text-primary)',
-              }}
-            />
-          </label>
+        {status === 'no-token' && (
+          <p className="mt-4 text-sm text-[var(--text-secondary)]">
+            请从「TVT技术服务部平台」进入本工具，不支持直接访问
+          </p>
+        )}
 
-          {error && (
-            <div
-              className="rounded-[var(--radius-sm)] px-3 py-2 text-sm"
-              style={{ background: '#fef2f2', color: '#b91c1c' }}
-            >
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-1 flex h-10 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--accent)] text-sm font-medium text-[var(--text-on-accent)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-60"
+        {status === 'error' && (
+          <div
+            className="mt-4 rounded-[var(--radius-sm)] px-3 py-2 text-sm"
+            style={{ background: '#fef2f2', color: '#b91c1c' }}
           >
-            {loading ? '登录中…' : '登录'}
-          </button>
-        </form>
-
-        <p className="mt-5 text-center text-xs text-[var(--text-muted)]">
-          默认账号：admin / admin123
-        </p>
+            {error}
+          </div>
+        )}
       </div>
     </div>
   )

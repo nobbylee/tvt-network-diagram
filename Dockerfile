@@ -41,6 +41,7 @@ RUN chmod +x /entrypoint.sh
 ENV PORT=3001 \
     HOST=0.0.0.0 \
     JWT_SECRET=tvt-change-me-in-production \
+    EXAM_SSO_SECRET= \
     DATA_DIR=/data
 
 VOLUME ["/data"]

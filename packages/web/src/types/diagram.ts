@@ -4,7 +4,7 @@ import type { DeviceBrand, DeviceIconType } from '../data/deviceLibrary'
 /** 设备节点业务数据 */
 export type DeviceNodeData = {
   name: string
-  brand: DeviceBrand | string
+  brand?: DeviceBrand | string
   icon: DeviceIconType | string
   model?: string
   ip?: string

@@ -104,6 +104,21 @@ describe('narch 1.2 往返', () => {
     expect(data.location).toBeUndefined()
   })
 
+  it('品牌留空时保持为空，不自动补默认品牌', () => {
+    const device: DeviceNode = {
+      id: 'empty-brand-device',
+      type: 'device',
+      position: { x: 0, y: 0 },
+      data: { name: '无品牌设备', icon: 'ipc-bullet' },
+    }
+
+    const narch = diagramToNarch([device], [], meta)
+    expect(narch.nodes[0]).toMatchObject({ brand: '' })
+
+    const { nodes } = narchToDiagram(narch)
+    expect((nodes[0] as DeviceNode).data.brand).toBe('')
+  })
+
   it('文本节点往返', () => {
     const text: TextNode = {
       id: 't1',

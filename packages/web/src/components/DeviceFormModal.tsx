@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   brandColors,
   brandLabels,
-  iconOptions,
+  iconOptionsForBrand,
   type DeviceBrand,
   type DeviceIconType,
   type DeviceItem,
@@ -34,6 +34,7 @@ export function DeviceFormModal({ title, initial, onSubmit, onClose }: DeviceFor
   const [name, setName] = useState(initial?.name ?? '')
   const [icon, setIcon] = useState<DeviceIconType>(initial?.icon ?? 'ipc-bullet')
   const [brand, setBrand] = useState<DeviceBrand>(initial?.brand ?? 'tvt')
+  const availableIcons = iconOptionsForBrand(brand)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -83,7 +84,14 @@ export function DeviceFormModal({ title, initial, onSubmit, onClose }: DeviceFor
             <label className="mb-1 block text-[10px] text-[var(--text-muted)]">分类</label>
             <select
               value={brand}
-              onChange={(e) => setBrand(e.target.value as DeviceBrand)}
+              onChange={(e) => {
+                const nextBrand = e.target.value as DeviceBrand
+                setBrand(nextBrand)
+                const nextIcons = iconOptionsForBrand(nextBrand)
+                if (!nextIcons.some((option) => option.value === icon)) {
+                  setIcon(nextIcons[0].value)
+                }
+              }}
               className="h-9 w-full rounded-[var(--radius-sm)] border px-3 text-sm outline-none focus:border-[var(--accent)]"
               style={inputStyle()}
             >
@@ -98,7 +106,7 @@ export function DeviceFormModal({ title, initial, onSubmit, onClose }: DeviceFor
           <div>
             <label className="mb-1 block text-[10px] text-[var(--text-muted)]">图标形态</label>
             <div className="grid grid-cols-4 gap-1.5">
-              {iconOptions.map((opt) => {
+              {availableIcons.map((opt) => {
                 const selected = icon === opt.value
                 const color = brandColors[brand]
                 return (

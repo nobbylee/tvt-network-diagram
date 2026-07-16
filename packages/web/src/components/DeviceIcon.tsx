@@ -5,31 +5,52 @@ type DeviceIconProps = {
   size?: number
 }
 
-function ServerRack({
+function RecorderImage({ size }: { size: number }) {
+  return (
+    <img
+      src="/product-icons/recorder-transparent.png"
+      width={size}
+      height={size}
+      alt="录像机"
+      draggable={false}
+      style={{ display: 'block', objectFit: 'contain', transform: 'scale(1.55)' }}
+    />
+  )
+}
+
+function PtzImage({ size }: { size: number }) {
+  return (
+    <img
+      src="/product-icons/ptz-transparent.png"
+      width={size}
+      height={size}
+      alt="球机"
+      draggable={false}
+      style={{ display: 'block', objectFit: 'contain', transform: 'scale(1.25)' }}
+    />
+  )
+}
+
+function ProductImage({
+  src,
+  alt,
   size,
-  badge,
+  scale = 1.25,
 }: {
+  src: string
+  alt: string
   size: number
-  badge: string
+  scale?: number
 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <rect x="4" y="3" width="16" height="5" rx="1.2" stroke="var(--ink)" strokeWidth="1.5" />
-      <rect x="4" y="10" width="16" height="5" rx="1.2" stroke="var(--ink)" strokeWidth="1.5" />
-      <rect x="4" y="17" width="16" height="4" rx="1.2" stroke="var(--ink)" strokeWidth="1.5" />
-      <circle cx="7" cy="5.5" r="0.8" fill="var(--ink)" />
-      <circle cx="7" cy="12.5" r="0.8" fill="var(--ink)" />
-      <text
-        x="16"
-        y="13.2"
-        textAnchor="middle"
-        fontSize="5.5"
-        fontWeight="700"
-        fill="var(--ink)"
-      >
-        {badge}
-      </text>
-    </svg>
+    <img
+      src={src}
+      width={size}
+      height={size}
+      alt={alt}
+      draggable={false}
+      style={{ display: 'block', objectFit: 'contain', transform: `scale(${scale})` }}
+    />
   )
 }
 
@@ -56,14 +77,7 @@ export function DeviceIcon({ type, size = 24 }: DeviceIconProps) {
         <circle cx="12" cy="12" r="1.8" fill={color} opacity="0.35" />
       </svg>
     ),
-    nvms: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="4" width="18" height="13" rx="2" stroke={color} strokeWidth="1.5" />
-        <line x1="3" y1="20" x2="21" y2="20" stroke={color} strokeWidth="1.5" />
-        <line x1="9" y1="17" x2="9" y2="20" stroke={color} strokeWidth="1.5" />
-        <line x1="15" y1="17" x2="15" y2="20" stroke={color} strokeWidth="1.5" />
-      </svg>
-    ),
+    nvms: <ProductImage src="/product-icons/nvms-platform.png" alt="NVMS 平台" size={size} scale={1.1} />,
     server: (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
         <rect x="4" y="3" width="16" height="6" rx="1.5" stroke={color} strokeWidth="1.5" />
@@ -72,15 +86,10 @@ export function DeviceIcon({ type, size = 24 }: DeviceIconProps) {
         <circle cx="7" cy="14" r="1" fill={color} />
       </svg>
     ),
-    'server-forward': <ServerRack size={size} badge="转" />,
-    'server-storage': <ServerRack size={size} badge="存" />,
-    'server-manage': <ServerRack size={size} badge="管" />,
-    decoder: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="8" width="12" height="8" rx="1.5" stroke={color} strokeWidth="1.5" />
-        <path d="M15 10 L20 8 L20 16 L15 14" stroke={color} strokeWidth="1.5" fill="none" />
-      </svg>
-    ),
+    'server-forward': <ProductImage src="/product-icons/server-forward-transparent.png" alt="流媒体服务器" size={size} scale={1.55} />,
+    'server-storage': <ProductImage src="/product-icons/server-storage-transparent.png" alt="存储服务器" size={size} />,
+    'server-manage': <ProductImage src="/product-icons/server-manage-transparent.png" alt="管理服务器" size={size} scale={1.55} />,
+    decoder: <ProductImage src="/product-icons/decoder-transparent.png" alt="解码器" size={size} scale={1.35} />,
     videowall: (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
         <rect x="3" y="5" width="8" height="6" rx="1" stroke={color} strokeWidth="1.5" />
@@ -139,11 +148,14 @@ export function DeviceIcon({ type, size = 24 }: DeviceIconProps) {
       </svg>
     ),
     'ipc-bullet': (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <rect x="4" y="8" width="14" height="8" rx="2" stroke={color} strokeWidth="1.5" />
-        <path d="M18 10 L22 8 L22 16 L18 14" stroke={color} strokeWidth="1.5" fill="none" />
-        <circle cx="8" cy="12" r="2" fill={color} opacity="0.3" />
-      </svg>
+      <img
+        src="/product-icons/ipc-bullet-transparent.png"
+        width={size}
+        height={size}
+        alt="筒形 IPC"
+        draggable={false}
+        style={{ display: 'block', objectFit: 'contain', transform: 'scale(1.28)' }}
+      />
     ),
     'ipc-dome': (
       <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -152,44 +164,13 @@ export function DeviceIcon({ type, size = 24 }: DeviceIconProps) {
         <circle cx="12" cy="14" r="2.5" fill={color} opacity="0.3" />
       </svg>
     ),
-    ptz: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <rect x="8" y="16" width="8" height="4" rx="1" stroke={color} strokeWidth="1.5" />
-        <ellipse cx="12" cy="11" rx="6" ry="5" stroke={color} strokeWidth="1.5" />
-        <circle cx="12" cy="11" r="2" fill={color} opacity="0.3" />
-      </svg>
-    ),
-    nvr: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="6" width="18" height="12" rx="2" stroke={color} strokeWidth="1.5" />
-        <circle cx="7" cy="12" r="1" fill={color} />
-        <circle cx="11" cy="12" r="1" fill={color} />
-        <line x1="14" y1="10" x2="19" y2="10" stroke={color} strokeWidth="1.5" />
-        <line x1="14" y1="14" x2="17" y2="14" stroke={color} strokeWidth="1.5" />
-      </svg>
-    ),
-    dvr: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="7" width="18" height="10" rx="2" stroke={color} strokeWidth="1.5" />
-        <rect x="5" y="9" width="3" height="2" rx="0.5" fill={color} opacity="0.4" />
-        <rect x="9" y="9" width="3" height="2" rx="0.5" fill={color} opacity="0.4" />
-        <rect x="13" y="9" width="3" height="2" rx="0.5" fill={color} opacity="0.4" />
-      </svg>
-    ),
-    access: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <rect x="6" y="3" width="12" height="18" rx="2" stroke={color} strokeWidth="1.5" />
-        <circle cx="12" cy="12" r="2" stroke={color} strokeWidth="1.5" />
-        <line x1="12" y1="16" x2="12" y2="18" stroke={color} strokeWidth="1.5" />
-      </svg>
-    ),
-    'mobile-app': (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <rect x="7" y="2" width="10" height="20" rx="2" stroke={color} strokeWidth="1.5" />
-        <line x1="7" y1="17.5" x2="17" y2="17.5" stroke={color} strokeWidth="1.5" />
-        <circle cx="12" cy="19.6" r="0.9" fill={color} />
-      </svg>
-    ),
+    ptz: <PtzImage size={size} />,
+    nvr: <RecorderImage size={size} />,
+    dvr: <RecorderImage size={size} />,
+    access: <ProductImage src="/product-icons/access-outdoor-transparent.png" alt="室外门禁" size={size} scale={0.88} />,
+    'control-keyboard': <ProductImage src="/product-icons/control-keyboard-transparent.png" alt="控制键盘" size={size} scale={1.5} />,
+    'intercom-indoor': <ProductImage src="/product-icons/intercom-indoor-transparent.png" alt="室内对讲机" size={size} scale={1.4} />,
+    'mobile-app': <ProductImage src="/product-icons/mobile-app.png" alt="手机 App" size={size} scale={1.1} />,
   }
 
   return icons[type] ?? icons['ipc-bullet']

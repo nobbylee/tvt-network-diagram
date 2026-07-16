@@ -132,12 +132,12 @@ function emptyToUndefined(value: string | undefined): string | undefined {
 }
 
 export function brandToNarch(brand: string | undefined): string {
-  if (!brand) return 'TVT'
+  if (!brand) return ''
   return BRAND_TO_NARCH[brand] ?? brand
 }
 
 export function brandFromNarch(brand: string | undefined): string {
-  if (!brand) return 'tvt'
+  if (!brand) return ''
   return BRAND_FROM_NARCH[brand] ?? brand.toLowerCase()
 }
 

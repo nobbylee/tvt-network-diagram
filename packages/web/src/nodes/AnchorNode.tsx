@@ -14,6 +14,9 @@ function AnchorNodeComponent({ selected }: NodeProps<AnchorNode>) {
       <Handle
         type="target"
         position={Position.Left}
+        id="in"
+        isConnectableStart
+        isConnectableEnd
         className="!pointer-events-none !h-2 !w-2 !border-0 !bg-transparent !opacity-0"
         style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}
       />
@@ -21,6 +24,8 @@ function AnchorNodeComponent({ selected }: NodeProps<AnchorNode>) {
         type="source"
         position={Position.Right}
         id="out"
+        isConnectableStart
+        isConnectableEnd
         className="!pointer-events-none !h-2 !w-2 !border-0 !bg-transparent !opacity-0"
         style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}
       />

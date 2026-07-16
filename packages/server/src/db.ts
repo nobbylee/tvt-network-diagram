@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3'
 import type { Database as DatabaseType } from 'better-sqlite3'
 import bcrypt from 'bcryptjs'
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -19,6 +20,7 @@ export type UserRow = {
   username: string
   password: string
   display_name: string | null
+  role: string | null
   created_at: string
 }
 
@@ -61,6 +63,41 @@ export function initSchema(): void {
     CREATE INDEX IF NOT EXISTS idx_projects_customer ON projects(customer);
     CREATE INDEX IF NOT EXISTS idx_projects_updated ON projects(updated_at DESC);
   `)
+
+  // 幂等补列：老库没有 role 字段（新增列不会因为 schema 里加了字段就自动出现在已存在的表上）
+  const userColumns = db.prepare('PRAGMA table_info(users)').all() as Array<{ name: string }>
+  if (!userColumns.some((c) => c.name === 'role')) {
+    db.exec('ALTER TABLE users ADD COLUMN role TEXT')
+  }
+}
+
+/**
+ * 主平台 SSO 免密登录：按 account（作为本地 username）查找或自动建号。
+ * 密码字段只是占位（本地永远不会走密码登录校验），displayName/role 每次都同步成主平台传来的最新值。
+ */
+export function findOrCreateUserByAccount(
+  account: string,
+  displayName: string | null | undefined,
+  role: string | null | undefined,
+): UserRow {
+  const existing = db.prepare('SELECT * FROM users WHERE username = ?').get(account) as
+    | UserRow
+    | undefined
+
+  if (existing) {
+    db.prepare('UPDATE users SET display_name = ?, role = ? WHERE id = ?').run(
+      displayName ?? existing.display_name,
+      role ?? existing.role,
+      existing.id,
+    )
+    return db.prepare('SELECT * FROM users WHERE id = ?').get(existing.id) as UserRow
+  }
+
+  const placeholder = bcrypt.hashSync(crypto.randomBytes(32).toString('hex'), 10)
+  const info = db
+    .prepare('INSERT INTO users (username, password, display_name, role) VALUES (?, ?, ?, ?)')
+    .run(account, placeholder, displayName ?? account, role ?? null)
+  return db.prepare('SELECT * FROM users WHERE id = ?').get(info.lastInsertRowid) as UserRow
 }
 
 /** 启动时写入默认账号（已存在则跳过） */

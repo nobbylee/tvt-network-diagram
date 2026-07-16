@@ -54,11 +54,17 @@ function DeviceNodeComponent({ id, data, selected }: NodeProps<DeviceNode>) {
       <Handle
         type="target"
         position={Position.Left}
+        id="left"
+        isConnectableStart
+        isConnectableEnd
         className="!h-2.5 !w-2.5 !border-2 !border-white !bg-[var(--accent)]"
       />
       <Handle
         type="source"
         position={Position.Right}
+        id="right"
+        isConnectableStart
+        isConnectableEnd
         className="!h-2.5 !w-2.5 !border-2 !border-white !bg-[var(--accent)]"
       />
 

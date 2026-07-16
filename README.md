@@ -23,7 +23,9 @@ cd packages/web && npm install && npm run dev
 - 前端：http://localhost:5173  
 - 后端：http://localhost:3001/api/health  
 
-默认账号：`admin` / `admin123`
+**登录方式（2026-07-16 起）**：本工具不再提供独立的账号密码登录，只接受从「TVT技术服务部平台」跳转时携带的 `?token=&name=` 免密登录（SSO handoff，见 `packages/server/src/routes/auth.ts` 的 `/api/auth/handoff`）。本地开发联调需要：
+1. `packages/server/.env` 配置 `EXAM_SSO_SECRET`，值必须和主平台 `server/.env` 的 `JWT_SECRET` 完全一致（见 `.env.example`）
+2. 从主平台登录后，用它签发的 JWT 拼接 `http://localhost:5173/?token=<主平台JWT>&name=<姓名>` 直接访问，不能只打开裸的 `http://localhost:5173`（会看到"请从主平台进入"的提示，不会有登录表单）
 
 ## Docker 部署
 

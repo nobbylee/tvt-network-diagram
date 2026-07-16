@@ -87,7 +87,6 @@ function DeviceCard({
 }
 
 type ModalState =
-  | { type: 'add'; categoryId?: string }
   | { type: 'edit'; categoryId: string; item: DeviceItem }
   | { type: 'delete'; categoryId: string; item: DeviceItem }
   | null
@@ -125,26 +124,6 @@ export function DeviceLibrary() {
       item.name.toLowerCase().includes(search.toLowerCase()),
     ),
   }))
-
-  const handleAdd = (values: DeviceFormValues) => {
-    const newItem: DeviceItem = {
-      id: `custom-${Date.now()}`,
-      name: values.name,
-      icon: values.icon,
-      brand: values.brand,
-      custom: true,
-    }
-
-    setLibrary((prev) =>
-      prev.map((cat) =>
-        cat.brand === values.brand
-          ? { ...cat, items: [...cat.items, newItem] }
-          : cat,
-      ),
-    )
-    setExpanded((prev) => ({ ...prev, [values.brand]: true }))
-    setModal(null)
-  }
 
   const handleEdit = (values: DeviceFormValues) => {
     if (modal?.type !== 'edit') return
@@ -231,16 +210,6 @@ export function DeviceLibrary() {
             <div className="flex items-center gap-0.5">
               <button
                 type="button"
-                title="新增元件"
-                onClick={() => setModal({ type: 'add' })}
-                className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] text-[var(--accent)] hover:bg-[var(--accent-soft)]"
-              >
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M6 2v8M2 6h8" stroke="currentColor" strokeWidth="1.4" />
-                </svg>
-              </button>
-              <button
-                type="button"
                 title="折叠元件库"
                 onClick={toggleLibrary}
                 className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-muted)] hover:bg-[var(--hover-bg)]"
@@ -299,16 +268,6 @@ export function DeviceLibrary() {
                   <span className="truncate">{category.name}</span>
                   <span className="ml-auto text-[var(--text-muted)]">{category.items.length}</span>
                 </button>
-                <button
-                  type="button"
-                  title={`在「${category.name}」中新增`}
-                  onClick={() => setModal({ type: 'add', categoryId: category.id })}
-                  className="mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded text-[var(--text-muted)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]"
-                >
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                    <path d="M5 1v8M1 5h8" stroke="currentColor" strokeWidth="1.3" />
-                  </svg>
-                </button>
               </div>
               {expanded[category.id] && (
                 <div className="mt-0.5 space-y-1 px-1">
@@ -334,20 +293,6 @@ export function DeviceLibrary() {
           ))}
         </div>
       </aside>
-
-      {modal?.type === 'add' && (
-        <DeviceFormModal
-          title="新增元件"
-          initial={{
-            name: '',
-            icon: 'ipc-bullet',
-            brand:
-              library.find((c) => c.id === modal.categoryId)?.brand ?? 'tvt',
-          }}
-          onSubmit={handleAdd}
-          onClose={() => setModal(null)}
-        />
-      )}
 
       {modal?.type === 'edit' && (
         <DeviceFormModal

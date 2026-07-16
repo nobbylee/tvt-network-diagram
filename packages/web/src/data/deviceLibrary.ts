@@ -7,6 +7,8 @@ export type DeviceIconType =
   | 'nvr'
   | 'dvr'
   | 'access'
+  | 'control-keyboard'
+  | 'intercom-indoor'
   | 'mobile-app'
   | 'nvms'
   | 'server'
@@ -50,6 +52,8 @@ export const iconOptions: { value: DeviceIconType; label: string }[] = [
   { value: 'nvr', label: '录像机' },
   { value: 'dvr', label: 'DVR' },
   { value: 'access', label: '门禁' },
+  { value: 'control-keyboard', label: '控制键盘' },
+  { value: 'intercom-indoor', label: '室内对讲机' },
   { value: 'mobile-app', label: '手机 App' },
   { value: 'nvms', label: 'NVMS 平台' },
   { value: 'server', label: '服务器' },
@@ -65,6 +69,38 @@ export const iconOptions: { value: DeviceIconType; label: string }[] = [
   { value: 'ap', label: '无线 AP' },
   { value: 'cloud', label: 'Internet / 云' },
 ]
+
+/** 已上传产品图片的设备类型图标；TVT 分类只保留这些图标。 */
+export const tvtProductImageIcons = new Set<DeviceIconType>([
+  'ipc-bullet',
+  'ptz',
+  'nvr',
+  'access',
+  'control-keyboard',
+  'intercom-indoor',
+  'mobile-app',
+  'nvms',
+  'server-forward',
+  'server-storage',
+  'server-manage',
+  'decoder',
+])
+
+const genericNetworkIcons = new Set<DeviceIconType>([
+  'server',
+  'switch',
+  'router',
+  'firewall',
+  'pc',
+  'ap',
+  'cloud',
+])
+
+export function iconOptionsForBrand(brand: DeviceBrand) {
+  return brand === 'tvt'
+    ? iconOptions.filter((option) => tvtProductImageIcons.has(option.value))
+    : iconOptions.filter((option) => genericNetworkIcons.has(option.value))
+}
 
 export const brandColors: Record<DeviceBrand, string> = {
   tvt: '#2f5d50',
@@ -87,6 +123,14 @@ export const defaultDeviceLibrary: DeviceCategory[] = [
       { id: 'tvt-nvr', name: '录像机', icon: 'nvr', brand: 'tvt' },
       { id: 'tvt-ptz', name: 'PTZ球机', icon: 'ptz', brand: 'tvt' },
       { id: 'tvt-nvms', name: 'NVMS 平台', icon: 'nvms', brand: 'tvt' },
+      { id: 'tvt-decoder', name: '解码器', icon: 'decoder', brand: 'tvt' },
+      { id: 'tvt-server-manage', name: '管理服务器', icon: 'server-manage', brand: 'tvt' },
+      { id: 'tvt-server-storage', name: '存储服务器', icon: 'server-storage', brand: 'tvt' },
+      { id: 'tvt-server-forward', name: '流媒体服务器', icon: 'server-forward', brand: 'tvt' },
+      { id: 'tvt-control-keyboard', name: '控制键盘', icon: 'control-keyboard', brand: 'tvt' },
+      { id: 'tvt-access-outdoor', name: '室外门禁', icon: 'access', brand: 'tvt' },
+      { id: 'tvt-intercom-indoor', name: '室内对讲机', icon: 'intercom-indoor', brand: 'tvt' },
+      { id: 'tvt-mobile-app', name: '手机 App', icon: 'mobile-app', brand: 'tvt' },
     ],
   },
   {
@@ -175,6 +219,12 @@ function migrateLibrary(raw: unknown): DeviceCategory[] | null {
         })
       }
     }
+  }
+
+  // TVT 设备类型仅保留有产品图片的图标；通用网络分类不受影响。
+  const tvtCategory = result.find((category) => category.brand === 'tvt')
+  if (tvtCategory) {
+    tvtCategory.items = tvtCategory.items.filter((item) => tvtProductImageIcons.has(item.icon))
   }
 
   return result

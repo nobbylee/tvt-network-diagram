@@ -1,4 +1,3 @@
-import { brandLabels, type DeviceBrand } from '../data/deviceLibrary'
 import { useCanvasStore } from '../stores/canvasStore'
 import { useUiStore } from '../stores/uiStore'
 import type { DeviceNode, TextNode } from '../types/diagram'
@@ -30,11 +29,6 @@ function inputStyle(): React.CSSProperties {
     color: 'var(--text-primary)',
   }
 }
-
-const brandOptions: { value: DeviceBrand; label: string }[] = [
-  { value: 'tvt', label: brandLabels.tvt },
-  { value: 'generic', label: brandLabels.generic },
-]
 
 const connectionTypes = ['网线', '光纤', 'PoE', 'WiFi', '4G']
 const annotColors = [
@@ -214,7 +208,7 @@ export function PropertyPanel() {
             const isRecorder = icon === 'nvr' || icon === 'dvr'
             const isSwitch = icon === 'switch'
             const isPowered =
-              icon.startsWith('ipc-') || icon === 'ptz' || icon === 'access'
+              icon.startsWith('ipc-') || icon === 'ptz' || icon === 'access' || icon === 'intercom-indoor'
             return (
               <>
                 <p className="nb-kicker mb-2">基本信息</p>
@@ -228,20 +222,18 @@ export function PropertyPanel() {
                     style={inputStyle()}
                   />
                 </Field>
-                <Field label="品牌">
-                  <select
-                    value={String(d.data.brand)}
+                <Field label="品牌" optional>
+                  <input
+                    type="text"
+                    value={d.data.brand ?? ''}
+                    placeholder="选填"
                     onFocus={snapshotOnFocus}
-                    onChange={(e) => updateNodeData(d.id, { brand: e.target.value })}
+                    onChange={(e) =>
+                      updateNodeData(d.id, { brand: e.target.value || undefined })
+                    }
                     className="h-8 w-full rounded-[var(--radius-sm)] border px-2.5 text-xs outline-none focus:border-[var(--accent)]"
                     style={inputStyle()}
-                  >
-                    {brandOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </Field>
                 <Field label="型号" optional>
                   <input

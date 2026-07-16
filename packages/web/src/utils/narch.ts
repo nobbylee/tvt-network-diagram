@@ -97,7 +97,7 @@ export function brandToNarch(brand: string): string {
 
 /** 导入 brand：兼容 TVT / 通用网络；旧第三方归入 generic */
 export function brandFromNarch(brand: string): string {
-  if (!brand) return 'generic'
+  if (!brand) return ''
   return BRAND_FROM_IMPORT[brand] ?? brand.toLowerCase()
 }
 
@@ -147,7 +147,7 @@ export function diagramToNarch(
       return {
         id: d.id,
         type: String(d.data.icon ?? 'server'),
-        brand: brandToNarch(String(d.data.brand ?? 'generic')),
+        brand: brandToNarch(String(d.data.brand ?? '')),
         model: d.data.model ?? '',
         name: d.data.name,
         ip: d.data.ip ?? '',

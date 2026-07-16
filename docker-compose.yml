@@ -8,6 +8,8 @@ services:
       PORT: "3001"
       HOST: "0.0.0.0"
       JWT_SECRET: "${JWT_SECRET:-tvt-change-me-in-production}"
+      # 免密登录用：必须和「TVT技术服务部平台」server/.env 的 JWT_SECRET 配成完全一样的值
+      EXAM_SSO_SECRET: "${EXAM_SSO_SECRET:?请在 .env 里配置和主平台一致的 JWT_SECRET 值}"
       DATA_DIR: "/data"
     volumes:
       - tvt_data:/data

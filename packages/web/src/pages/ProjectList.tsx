@@ -14,7 +14,6 @@ import {
   type ProjectSummary,
 } from '../api/projects'
 import { ApiError } from '../api/client'
-import { useAuthStore } from '../stores/authStore'
 
 type ProjectListProps = {
   onOpenProject: (id: string, name: string, customer?: string) => void
@@ -29,14 +28,12 @@ function formatUpdatedAt(value?: string): string {
 }
 
 export function ProjectList({ onOpenProject }: ProjectListProps) {
-  const user = useAuthStore((s) => s.user)
-  const logout = useAuthStore((s) => s.logout)
-
   const [projects, setProjects] = useState<ProjectSummary[]>([])
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [connectionFailed, setConnectionFailed] = useState(false)
   const [creating, setCreating] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
   const [newName, setNewName] = useState('')
@@ -55,12 +52,16 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
     try {
       const items = await listProjects({ search: debouncedSearch })
       setProjects(items)
+      setConnectionFailed(false)
     } catch (err) {
       setProjects([])
       if (err instanceof ApiError) {
-        setError(err.message)
+        const isConnectionFailure = err.status === 0 || [502, 503, 504].includes(err.status)
+        setError(isConnectionFailure ? '无法连接服务器，请确认后端已启动' : err.message)
+        setConnectionFailed(isConnectionFailure)
       } else {
         setError('加载项目列表失败')
+        setConnectionFailed(false)
       }
     } finally {
       setLoading(false)
@@ -70,6 +71,16 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
   useEffect(() => {
     void fetchList()
   }, [fetchList])
+
+  useEffect(() => {
+    if (!connectionFailed) return
+
+    const retryTimer = window.setTimeout(() => {
+      void fetchList()
+    }, 2000)
+
+    return () => window.clearTimeout(retryTimer)
+  }, [connectionFailed, error, fetchList])
 
   async function handleCreate() {
     const name = newName.trim() || '未命名项目'
@@ -134,32 +145,10 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
 
   return (
     <div className="flex h-full flex-col" style={{ background: 'var(--app-bg)' }}>
-      <header
-        className="flex h-14 shrink-0 items-center justify-between border-b px-6"
-        style={{ background: 'var(--toolbar-bg)', borderColor: 'var(--panel-border)' }}
-      >
-        <div className="nb-title text-sm">TVT 网络架构图</div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-[var(--text-secondary)]">
-            {user?.displayName || user?.username}
-          </span>
-          <button
-            type="button"
-            onClick={() => logout()}
-            className="text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
-          >
-            退出
-          </button>
-        </div>
-      </header>
-
       <main className="mx-auto w-full max-w-5xl flex-1 overflow-y-auto px-6 py-8">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <h1 className="nb-title text-xl">我的项目</h1>
-            <p className="mt-1 text-sm text-[var(--text-secondary)]">
-              打开已有拓扑，或新建项目开始绘制
-            </p>
+            <h1 className="nb-title text-3xl">我的项目</h1>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <input

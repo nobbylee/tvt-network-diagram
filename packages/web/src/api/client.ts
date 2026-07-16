@@ -2,16 +2,14 @@ import { useAuthStore } from '../stores/authStore'
 
 /**
  * API 基址：
- * - 开发：默认 http://localhost:3001（可用 VITE_API_BASE 覆盖）
- * - 生产 Docker：VITE_API_BASE 为空字符串，走同源 /api（由 nginx 反代）
+ * - 开发：默认走同源 /api（由 Vite 代理到后端）
+ * - 生产 Docker：同样走同源 /api（由 nginx 反代）
+ * - 如需直连，可用 VITE_API_BASE 覆盖
  */
 export function getApiBase(): string {
   const fromEnv = import.meta.env.VITE_API_BASE
   if (fromEnv !== undefined && fromEnv !== null) {
     return String(fromEnv).replace(/\/$/, '')
-  }
-  if (import.meta.env.DEV) {
-    return 'http://localhost:3001'
   }
   return ''
 }

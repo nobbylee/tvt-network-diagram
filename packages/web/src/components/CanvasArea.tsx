@@ -3,6 +3,7 @@ import {
   Background,
   BackgroundVariant,
   Controls,
+  ConnectionMode,
   MiniMap,
   ReactFlow,
   ReactFlowProvider,
@@ -439,6 +440,7 @@ function CanvasInner() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
+        connectionMode={ConnectionMode.Loose}
         fitView
         fitViewOptions={{ padding: 0.2 }}
         minZoom={0.25}

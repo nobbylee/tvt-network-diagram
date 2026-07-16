@@ -91,7 +91,7 @@ export async function exportDiagramPdf(
   ctx.fillRect(0, 0, pageW, titleH)
   ctx.fillStyle = '#fbf8f1'
   ctx.font = 'bold 22px "PingFang SC","Microsoft YaHei",sans-serif'
-  ctx.fillText('TVT 网络架构图', margin, 34)
+  ctx.fillText('网络拓扑图绘制工具', margin, 34)
 
   const diagramTop = titleH + titleBlock
   const diagramLeft = margin

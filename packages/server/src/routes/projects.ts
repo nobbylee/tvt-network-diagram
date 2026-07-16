@@ -6,7 +6,7 @@ import {
   type DiagramData,
   type ProjectRow,
 } from '../db.js'
-import { findUserById, isAdminUsername } from '../auth.js'
+import { findUserById, isAdmin, type PublicUser } from '../auth.js'
 import { requireAuth } from '../middleware/auth.js'
 import {
   diagramToNarch,
@@ -70,9 +70,9 @@ function safeFilename(name: string): string {
 function canAccessProject(
   row: ProjectRow,
   userId: number | undefined,
-  username: string | undefined,
+  user: PublicUser | undefined,
 ): boolean {
-  if (isAdminUsername(username)) return true
+  if (isAdmin(user)) return true
   if (userId == null) return false
   // 无归属的旧项目仅管理员可见
   if (row.author_id == null) return false
@@ -87,8 +87,7 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
     const search = request.query.search?.trim()
     const customer = request.query.customer?.trim()
     const userId = request.user?.id
-    const username = request.user?.username
-    const admin = isAdminUsername(username)
+    const admin = isAdmin(request.user)
 
     let sql = 'SELECT * FROM projects WHERE 1=1'
     const params: (string | number)[] = []
@@ -221,7 +220,7 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
       if (!row) {
         return reply.code(404).send({ error: '项目不存在' })
       }
-      if (!canAccessProject(row, request.user?.id, request.user?.username)) {
+      if (!canAccessProject(row, request.user?.id, request.user)) {
         return reply.code(403).send({ error: '无权访问该项目' })
       }
 
@@ -258,7 +257,7 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
       if (!row) {
         return reply.code(404).send({ error: '项目不存在' })
       }
-      if (!canAccessProject(row, request.user?.id, request.user?.username)) {
+      if (!canAccessProject(row, request.user?.id, request.user)) {
         return reply.code(403).send({ error: '无权访问该项目' })
       }
       return toDetail(row)
@@ -283,7 +282,7 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
     if (!row) {
       return reply.code(404).send({ error: '项目不存在' })
     }
-    if (!canAccessProject(row, request.user?.id, request.user?.username)) {
+    if (!canAccessProject(row, request.user?.id, request.user)) {
       return reply.code(403).send({ error: '无权访问该项目' })
     }
 
@@ -326,7 +325,7 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
       if (!row) {
         return reply.code(404).send({ error: '项目不存在' })
       }
-      if (!canAccessProject(row, request.user?.id, request.user?.username)) {
+      if (!canAccessProject(row, request.user?.id, request.user)) {
         return reply.code(403).send({ error: '无权访问该项目' })
       }
 
