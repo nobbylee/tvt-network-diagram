@@ -20,6 +20,8 @@ type ProjectListItem = {
   name: string
   customer: string
   author: string
+  authorId: number | null
+  isPublic: boolean
   deviceCount: number
   edgeCount: number
   createdAt: string
@@ -43,6 +45,8 @@ function toListItem(row: ProjectRow): ProjectListItem {
     name: row.name,
     customer: row.customer ?? '',
     author: authorName(row.author_id),
+    authorId: row.author_id,
+    isPublic: !!row.is_public,
     deviceCount: diagram.nodes.length,
     edgeCount: diagram.edges.length,
     createdAt: row.created_at,
@@ -67,14 +71,28 @@ function safeFilename(name: string): string {
   return name.replace(/[\\/:*?"<>|]+/g, '_').trim() || 'project'
 }
 
-function canAccessProject(
+// 只读访问：作者本人、管理员，或者项目被作者手动设为公开（is_public）
+function canReadProject(
+  row: ProjectRow,
+  userId: number | undefined,
+  user: PublicUser | undefined,
+): boolean {
+  if (isAdmin(user)) return true
+  if (row.is_public) return true
+  if (userId == null) return false
+  // 无归属的旧项目仅管理员可见
+  if (row.author_id == null) return false
+  return row.author_id === userId
+}
+
+// 编辑/删除/改可见性：只有作者本人和管理员，公开项目对其他人也只是"能看"，不代表"能改"
+function canWriteProject(
   row: ProjectRow,
   userId: number | undefined,
   user: PublicUser | undefined,
 ): boolean {
   if (isAdmin(user)) return true
   if (userId == null) return false
-  // 无归属的旧项目仅管理员可见
   if (row.author_id == null) return false
   return row.author_id === userId
 }
@@ -93,7 +111,7 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
     const params: (string | number)[] = []
 
     if (!admin) {
-      sql += ' AND author_id = ?'
+      sql += ' AND (author_id = ? OR is_public = 1)'
       params.push(userId!)
     }
 
@@ -220,7 +238,7 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
       if (!row) {
         return reply.code(404).send({ error: '项目不存在' })
       }
-      if (!canAccessProject(row, request.user?.id, request.user)) {
+      if (!canReadProject(row, request.user?.id, request.user)) {
         return reply.code(403).send({ error: '无权访问该项目' })
       }
 
@@ -257,7 +275,7 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
       if (!row) {
         return reply.code(404).send({ error: '项目不存在' })
       }
-      if (!canAccessProject(row, request.user?.id, request.user)) {
+      if (!canReadProject(row, request.user?.id, request.user)) {
         return reply.code(403).send({ error: '无权访问该项目' })
       }
       return toDetail(row)
@@ -271,6 +289,7 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
       name?: string
       customer?: string
       diagram?: DiagramData
+      isPublic?: boolean
     }
   }>('/api/projects/:id', { preHandler: requireAuth }, async (request, reply) => {
     const id = Number(request.params.id)
@@ -282,8 +301,8 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
     if (!row) {
       return reply.code(404).send({ error: '项目不存在' })
     }
-    if (!canAccessProject(row, request.user?.id, request.user)) {
-      return reply.code(403).send({ error: '无权访问该项目' })
+    if (!canWriteProject(row, request.user?.id, request.user)) {
+      return reply.code(403).send({ error: '无权修改该项目' })
     }
 
     const body = request.body ?? {}
@@ -299,13 +318,15 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
       body.diagram !== undefined
         ? stringifyDiagram(body.diagram)
         : row.diagram
+    const isPublic =
+      body.isPublic !== undefined ? (body.isPublic ? 1 : 0) : row.is_public
     const now = new Date().toISOString()
 
     db.prepare(
       `UPDATE projects
-       SET name = ?, customer = ?, diagram = ?, updated_at = ?
+       SET name = ?, customer = ?, diagram = ?, is_public = ?, updated_at = ?
        WHERE id = ?`,
-    ).run(name, customer, diagramJson, now, id)
+    ).run(name, customer, diagramJson, isPublic, now, id)
 
     const updated = getProject(id)
     return toDetail(updated!)
@@ -325,8 +346,8 @@ export async function projectRoutes(app: FastifyInstance): Promise<void> {
       if (!row) {
         return reply.code(404).send({ error: '项目不存在' })
       }
-      if (!canAccessProject(row, request.user?.id, request.user)) {
-        return reply.code(403).send({ error: '无权访问该项目' })
+      if (!canWriteProject(row, request.user?.id, request.user)) {
+        return reply.code(403).send({ error: '无权删除该项目' })
       }
 
       db.prepare('DELETE FROM projects WHERE id = ?').run(id)

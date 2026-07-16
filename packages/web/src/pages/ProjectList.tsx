@@ -11,9 +11,11 @@ import {
   importNarch,
   listProjects,
   removeProject,
+  setProjectVisibility,
   type ProjectSummary,
 } from '../api/projects'
 import { ApiError } from '../api/client'
+import { useAuthStore } from '../stores/authStore'
 
 type ProjectListProps = {
   onOpenProject: (id: string, name: string, customer?: string) => void
@@ -28,6 +30,7 @@ function formatUpdatedAt(value?: string): string {
 }
 
 export function ProjectList({ onOpenProject }: ProjectListProps) {
+  const currentUser = useAuthStore((s) => s.user)
   const [projects, setProjects] = useState<ProjectSummary[]>([])
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -120,6 +123,23 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
         setError(err.message)
       } else {
         setError('删除失败')
+      }
+    }
+  }
+
+  async function handleToggleVisibility(e: ReactMouseEvent, project: ProjectSummary) {
+    e.stopPropagation()
+    const nextIsPublic = !project.isPublic
+    try {
+      await setProjectVisibility(project.id, nextIsPublic)
+      setProjects((prev) =>
+        prev.map((p) => (p.id === project.id ? { ...p, isPublic: nextIsPublic } : p)),
+      )
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message)
+      } else {
+        setError('切换可见性失败')
       }
     }
   }
@@ -282,6 +302,37 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
                     <span className="font-mono text-[10px] text-[var(--text-muted)]">
                       {formatUpdatedAt(project.updatedAt)}
                     </span>
+                    {String(project.authorId ?? '') === String(currentUser?.id ?? '') ? (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        title={project.isPublic ? '点击设为私人' : '点击设为公开'}
+                        onClick={(e) => void handleToggleVisibility(e, project)}
+                        onKeyDown={(e: ReactKeyboardEvent) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            void handleToggleVisibility(e as unknown as ReactMouseEvent, project)
+                          }
+                        }}
+                        className="rounded-[var(--radius-sm)] px-1.5 py-0.5 font-mono text-[10px] transition-colors"
+                        style={
+                          project.isPublic
+                            ? { background: 'var(--accent-soft)', color: 'var(--accent)' }
+                            : { background: 'var(--hover-bg)', color: 'var(--text-muted)' }
+                        }
+                      >
+                        {project.isPublic ? '公开' : '私人'}
+                      </span>
+                    ) : (
+                      project.isPublic && (
+                        <span
+                          className="rounded-[var(--radius-sm)] px-1.5 py-0.5 font-mono text-[10px]"
+                          style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}
+                        >
+                          公开
+                        </span>
+                      )
+                    )}
                     <span
                       role="button"
                       tabIndex={0}

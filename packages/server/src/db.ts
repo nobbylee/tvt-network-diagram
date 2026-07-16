@@ -30,6 +30,7 @@ export type ProjectRow = {
   customer: string | null
   author_id: number | null
   diagram: string
+  is_public: number
   created_at: string
   updated_at: string
 }
@@ -56,6 +57,7 @@ export function initSchema(): void {
       customer   TEXT,
       author_id  INTEGER REFERENCES users(id),
       diagram    TEXT NOT NULL DEFAULT '{"nodes":[],"edges":[]}',
+      is_public  INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
@@ -64,10 +66,16 @@ export function initSchema(): void {
     CREATE INDEX IF NOT EXISTS idx_projects_updated ON projects(updated_at DESC);
   `)
 
-  // 幂等补列：老库没有 role 字段（新增列不会因为 schema 里加了字段就自动出现在已存在的表上）
+  // 幂等补列：老库没有这些字段（新增列不会因为 schema 里加了字段就自动出现在已存在的表上）
   const userColumns = db.prepare('PRAGMA table_info(users)').all() as Array<{ name: string }>
   if (!userColumns.some((c) => c.name === 'role')) {
     db.exec('ALTER TABLE users ADD COLUMN role TEXT')
+  }
+
+  // 默认私人：所有项目在这个字段加入之前都视为私人（0），只有作者/管理员可见，需手动切换才公开
+  const projectColumns = db.prepare('PRAGMA table_info(projects)').all() as Array<{ name: string }>
+  if (!projectColumns.some((c) => c.name === 'is_public')) {
+    db.exec('ALTER TABLE projects ADD COLUMN is_public INTEGER NOT NULL DEFAULT 0')
   }
 }
 

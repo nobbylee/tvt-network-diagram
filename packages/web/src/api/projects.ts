@@ -12,6 +12,8 @@ export type ProjectSummary = {
   customer?: string | null
   author?: string | null
   authorName?: string | null
+  authorId?: number | null
+  isPublic?: boolean
   deviceCount?: number
   edgeCount?: number
   updatedAt?: string
@@ -55,6 +57,8 @@ function normalizeProject(raw: Record<string, unknown>): ProjectSummary {
       }
       return ''
     })(),
+    authorId: typeof raw.authorId === 'number' ? raw.authorId : null,
+    isPublic: !!raw.isPublic,
     deviceCount,
     edgeCount,
     updatedAt: raw.updatedAt ? String(raw.updatedAt) : undefined,
@@ -124,6 +128,7 @@ export async function updateProject(
     name?: string
     customer?: string
     diagram?: DiagramPayload
+    isPublic?: boolean
   },
 ): Promise<ProjectDetail> {
   const data = await apiRequest<Record<string, unknown>>(`/api/projects/${id}`, {
@@ -134,6 +139,15 @@ export async function updateProject(
     ...normalizeProject(data),
     diagram: (data.diagram as DiagramPayload | undefined) ?? input.diagram,
   }
+}
+
+/** 切换项目的公开/私人状态，仅作者本人/管理员可操作，默认私人 */
+export async function setProjectVisibility(id: string, isPublic: boolean): Promise<ProjectSummary> {
+  const data = await apiRequest<Record<string, unknown>>(`/api/projects/${id}`, {
+    method: 'PUT',
+    body: { isPublic },
+  })
+  return normalizeProject(data)
 }
 
 export async function removeProject(id: string): Promise<void> {
