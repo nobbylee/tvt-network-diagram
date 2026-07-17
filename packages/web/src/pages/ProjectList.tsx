@@ -170,37 +170,16 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
           <div>
             <h1 className="nb-title text-3xl">我的项目</h1>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".narch,application/json"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) void handleImportFile(file)
-              }}
-            />
-            <button
-              type="button"
-              disabled={importing}
-              onClick={() => fileInputRef.current?.click()}
-              className="flex h-9 items-center gap-2 rounded-[var(--radius-sm)] border px-3 text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] disabled:opacity-60"
-              style={{ borderColor: 'var(--panel-border)', background: 'var(--panel-bg)' }}
-            >
-              {importing ? '导入中…' : '导入 .narch'}
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowCreate(true)}
-              className="flex h-9 items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--accent)] px-4 text-sm font-medium text-[var(--text-on-accent)] transition-colors hover:bg-[var(--accent-hover)]"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M7 2v10M2 7h10" stroke="currentColor" strokeWidth="1.5" />
-              </svg>
-              新建项目
-            </button>
-          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".narch,application/json"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) void handleImportFile(file)
+            }}
+          />
         </div>
 
         <div className="relative mb-5 max-w-sm">
@@ -248,22 +227,35 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
           <div className="py-16 text-center text-sm text-[var(--text-muted)]">加载中…</div>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <button
-              type="button"
-              onClick={() => setShowCreate(true)}
-              className="flex min-h-[140px] flex-col items-center justify-center gap-2 rounded-[var(--radius-md)] border border-dashed transition-colors hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]"
+            <div
+              className="flex min-h-[140px] flex-col overflow-hidden rounded-[var(--radius-md)] border border-dashed"
               style={{ borderColor: 'var(--panel-border)', background: 'var(--panel-bg)' }}
             >
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-full"
-                style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}
+              <button
+                type="button"
+                onClick={() => setShowCreate(true)}
+                className="flex flex-1 flex-col items-center justify-center gap-2 transition-colors hover:bg-[var(--accent-soft)]"
               >
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <path d="M9 3v12M3 9h12" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              </div>
-              <span className="text-sm text-[var(--text-secondary)]">新建空白项目</span>
-            </button>
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-full"
+                  style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M9 3v12M3 9h12" stroke="currentColor" strokeWidth="1.5" />
+                  </svg>
+                </div>
+                <span className="text-sm text-[var(--text-secondary)]">新建空白项目</span>
+              </button>
+              <div className="border-t border-dashed" style={{ borderColor: 'var(--panel-border)' }} />
+              <button
+                type="button"
+                disabled={importing}
+                onClick={() => fileInputRef.current?.click()}
+                className="py-2.5 text-xs text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover-bg)] disabled:opacity-60"
+              >
+                {importing ? '导入中…' : '导入 .narch'}
+              </button>
+            </div>
 
             {projects.map((project) => (
               <button
@@ -393,7 +385,7 @@ export function ProjectList({ onOpenProject }: ProjectListProps) {
 
         {!loading && !error && projects.length === 0 && (
           <p className="mt-6 text-center text-sm text-[var(--text-muted)]">
-            暂无项目，点击「新建项目」开始
+            暂无项目，点击「新建空白项目」开始
           </p>
         )}
       </main>
